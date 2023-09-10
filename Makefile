@@ -26,3 +26,7 @@ run-it:	docker-build
 	docker run -v $(shell pwd):/tmp/workdir -w /tmp/workdir \
 	-ti ${TAG_NAME}:${SDL_VERSION} \
 	bash
+
+clean:
+	docker ps -f name=${TAG_NAME} -qa | xargs docker rm -f
+	docker image ls --filter 'reference=${TAG_NAME}' -qa | xargs docker rmi -f
