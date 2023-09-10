@@ -1,3 +1,5 @@
+[![Deploy](https://github.com/humbertodias/docker-sdl-compiler/actions/workflows/deploy.yaml/badge.svg)](https://github.com/humbertodias/docker-sdl-compiler/actions/workflows/deploy.yaml)
+
 # docker-sdl-compiler
 
 Container with SDL2 + Tools to compile a C/C++ project.
