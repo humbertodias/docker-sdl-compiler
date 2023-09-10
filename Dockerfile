@@ -85,8 +85,8 @@ RUN curl -skL ${SDL_MIXER_URL} -o SDL2_mixer-${SDL_MIXER_VERSION}.tar.gz \
   && cd / && rm -rf /SDL2_mixer-${SDL_MIXER_VERSION} SDL2_mixer-${SDL_MIXER_VERSION}.tar.gz
 
 ARG USER=docker
-ARG UID=9999
-ARG GID=9999
+ARG UID=1000
+ARG GID=1000
 # default password for user
 ARG PW=docker
 
