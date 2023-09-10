@@ -17,7 +17,8 @@ RUN apt update && apt install -y \
     libwebp-dev \
     libgsl-dev \
     libsdl2-gfx-dev \
-    cmake
+    cmake \
+    file \
     # libsdl2-image-dev \
     # libsdl2-mixer-dev \
     # libsdl2-net-dev \
