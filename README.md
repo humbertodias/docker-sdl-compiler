@@ -11,8 +11,9 @@ Container with SDL2 + Tools to compile a C/C++ project.
 
 ```shell
 YOUR_PROJECT_PATH=$(shell pwd)
+SDL_VERSION=2.28.3
 docker run -v $YOUR_PROJECT_PATH:/tmp/workdir \
 -w /tmp/workdir \
--ti hldtux:sdl2-compiler:2.28.3 \
+-ti hldtux:sdl2-compiler:$SDL_VERSION \
 bash
 ```
