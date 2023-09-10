@@ -1,6 +1,7 @@
 FROM debian:bookworm
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=America/Sao_Paulo
+
 # Update and install cross-platform build dependencies
 RUN apt update && apt install -y \
     gcc \
@@ -18,7 +19,7 @@ RUN apt update && apt install -y \
     libgsl-dev \
     libsdl2-gfx-dev \
     cmake \
-    file \
+    file
     # libsdl2-image-dev \
     # libsdl2-mixer-dev \
     # libsdl2-net-dev \
