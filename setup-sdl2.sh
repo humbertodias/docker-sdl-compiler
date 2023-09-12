@@ -11,14 +11,16 @@ SDL_NET_VERSION=${5:-2.2.0}
 install_sdl(){
 NAME=$1
 VERSION=$2
-NAME_WITHOUT_NUMBER=$(echo $NAME | sed -r 's/2//g')
+NAME_WITHOUT_NUMBER=`echo $NAME | sed -r 's/2//g'`
 FOLDER_NAME=${NAME}-${VERSION}
 URL=https://github.com/libsdl-org/${NAME_WITHOUT_NUMBER}/releases/download/release-${VERSION}/${FOLDER_NAME}.tar.gz
 echo $URL
-curl -o /tmp/${FOLDER_NAME}.tar.gz -skL $URL  \
-  && tar xf /tmp/${FOLDER_NAME}.tar.gz \
-  && cd ${FOLDER_NAME} && ./configure && make && make install \
-  && rm -rf /tmp/${FOLDER_NAME} /tmp/${FOLDER_NAME}.tar.gz
+NPROC=`nproc`
+WORKDIR=`mktemp -d --suffix=sdl`
+cd ${WORKDIR} \
+  && curl -skL $URL | tar xvz --strip-components=1 \
+  && ./configure && make --jobs=${NPROC} && make --jobs=${NPROC} install \
+  && rm -rf ${WORKDIR}
 }
 
 install_sdl SDL2 $SDL_VERSION
