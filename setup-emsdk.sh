@@ -12,4 +12,4 @@ git pull && \
 # Make the "latest" SDK "active" for the current user. (writes .emscripten file)
 ./emsdk activate latest
 # Activate PATH and other environment variables in the current terminal
-RUN echo "source /opt/emsdk/emsdk_env.sh" >> ~/.profile
+echo "source /opt/emsdk/emsdk_env.sh" >> ~/.profile
