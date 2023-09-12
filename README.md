@@ -2,7 +2,7 @@
 
 # docker-sdl-compiler
 
-Docker container [sdl-compiler](https://hub.docker.com/repository/docker/hldtux/sdl-compiler) with SDL 1/2 + tools to compile a C/C++ project.
+Docker container [sdl-compiler](https://hub.docker.com/repository/docker/hldtux/sdl-compiler) with SDL 1/2 + [empscripten](https://emscripten.org/) + tools to compile a C/C++ project.
 
 ### How to use
 
