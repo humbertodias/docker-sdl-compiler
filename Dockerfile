@@ -19,47 +19,20 @@ RUN apt update && apt install -y \
     libgsl-dev \
     libsdl2-gfx-dev \
     cmake \
-    file
-    # libsdl2-image-dev \
-    # libsdl2-mixer-dev \
-    # libsdl2-net-dev \
-    # libsdl2-ttf-dev \
-    # libsdl2-dev \
+    file    
 
 # Install other dependencies
 RUN apt install -y make xterm sudo build-essential git zip curl valgrind clang-format
 
-# https://github.com/libsdl-org/SDL/releases/download/release-2.28.3/SDL2-2.28.3.tar.gz
 ARG SDL_VERSION=2.28.3
-ENV SDL_URL="https://github.com/libsdl-org/SDL/releases/download/release-${SDL_VERSION}/SDL2-${SDL_VERSION}.tar.gz"
-RUN curl -skL ${SDL_URL} -o SDL2-${SDL_VERSION}.tar.gz \
-  && tar xf SDL2-${SDL_VERSION}.tar.gz \
-  && cd /SDL2-${SDL_VERSION} && ./configure && make && make install \
-  && cd / && rm -rf /SDL2-${SDL_VERSION} SDL2-${SDL_VERSION}.tar.gz
-
-# https://github.com/libsdl-org/SDL_ttf/releases/download/release-2.20.2/SDL2_ttf-2.20.2.tar.gz
 ARG SDL_TTF_VERSION=2.20.2
-ENV SDL_TTF_URL="https://github.com/libsdl-org/SDL_ttf/releases/download/release-${SDL_TTF_VERSION}/SDL2_ttf-${SDL_TTF_VERSION}.tar.gz"
-RUN curl -skL ${SDL_TTF_URL} -o SDL2_ttf-${SDL_TTF_VERSION}.tar.gz \
-  && tar xf SDL2_ttf-${SDL_TTF_VERSION}.tar.gz \
-  && cd /SDL2_ttf-${SDL_TTF_VERSION} && ./configure && make && make install \
-  && cd / && rm -rf /SDL2_ttf-${SDL_TTF_VERSION} SDL2_ttf-${SDL_TTF_VERSION}.tar.gz
-
-# https://github.com/libsdl-org/SDL_image/releases/download/release-2.6.3/SDL2_image-2.6.3.tar.gz
 ARG SDL_IMAGE_VERSION=2.6.3
-ENV SDL_IMAGE_URL="https://github.com/libsdl-org/SDL_image/releases/download/release-${SDL_IMAGE_VERSION}/SDL2_image-${SDL_IMAGE_VERSION}.tar.gz"
-RUN curl -skL ${SDL_IMAGE_URL} -o SDL2_image-${SDL_IMAGE_VERSION}.tar.gz \
-  && tar xf SDL2_image-${SDL_IMAGE_VERSION}.tar.gz \
-  && cd /SDL2_image-${SDL_IMAGE_VERSION} && ./configure && make && make install \
-  && cd / && rm -rf /SDL2_image-${SDL_IMAGE_VERSION} SDL2_image-${SDL_IMAGE_VERSION}.tar.gz
-
-# https://github.com/libsdl-org/SDL_mixer/releases/download/release-2.6.3/SDL2_mixer-2.6.3.tar.gz
 ARG SDL_MIXER_VERSION=2.6.3
-ENV SDL_MIXER_URL="https://github.com/libsdl-org/SDL_mixer/releases/download/release-${SDL_MIXER_VERSION}/SDL2_mixer-${SDL_MIXER_VERSION}.tar.gz"
-RUN curl -skL ${SDL_MIXER_URL} -o SDL2_mixer-${SDL_MIXER_VERSION}.tar.gz \
-  && tar xf SDL2_mixer-${SDL_MIXER_VERSION}.tar.gz \
-  && cd /SDL2_mixer-${SDL_MIXER_VERSION} && ./configure && make && make install \
-  && cd / && rm -rf /SDL2_mixer-${SDL_MIXER_VERSION} SDL2_mixer-${SDL_MIXER_VERSION}.tar.gz
+ARG SDL_NET_VERSION=2.2.0
+
+ADD setup-*.sh /
+RUN bash setup-sdl1.sh
+RUN bash setup-sdl2.sh ${SDL_VERSION} ${SDL_TTF_VERSION} ${SDL_IMAGE_VERSION} ${SDL_MIXER_VERSION} ${SDL_NET_VERSION}
 
 # emcc
 RUN \

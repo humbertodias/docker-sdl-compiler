@@ -2,8 +2,9 @@ SDL_VERSION=2.28.3
 SDL_TTF_VERSION=2.20.2
 SDL_IMAGE_VERSION=2.6.3
 SDL_MIXER_VERSION=2.6.3
-TAG_NAME=sdl2-compiler
+SDL_NET_VERSION=2.2.0
 DOCKERHUB_USERNAME=hldtux
+TAG_NAME=sdl-compiler:${SDL_VERSION}
 
 build:
 	docker build . \
@@ -11,20 +12,24 @@ build:
 	--build-arg SDL_TTF_VERSION=${SDL_TTF_VERSION} \
 	--build-arg SDL_IMAGE_VERSION=${SDL_IMAGE_VERSION} \
 	--build-arg SDL_MIXER_VERSION=${SDL_MIXER_VERSION} \
-	-t ${TAG_NAME}:${SDL_VERSION}
+	--build-arg SDL_NET_VERSION=${SDL_NET_VERSION} \
+	-t ${TAG_NAME}
+
+build-linux:
+	DOCKER_DEFAULT_PLATFORM=linux/amd64 $(MAKE) build
 
 tag:
-	docker tag ${TAG_NAME}:${SDL_VERSION} ${DOCKERHUB_USERNAME}/${TAG_NAME}:${SDL_VERSION}
+	docker tag ${TAG_NAME} ${DOCKERHUB_USERNAME}/${TAG_NAME}
 
 login:
 	docker login -u ${DOCKERHUB_USERNAME}
 
 push: 	tag
-	docker push ${DOCKERHUB_USERNAME}/${TAG_NAME}:${SDL_VERSION}
+	docker push ${DOCKERHUB_USERNAME}/${TAG_NAME}
 
 run-it:	docker-build
 	docker run -v $(shell pwd):/tmp/workdir -w /tmp/workdir \
-	-ti ${TAG_NAME}:${SDL_VERSION} \
+	-ti ${TAG_NAME} \
 	bash
 
 clean:
