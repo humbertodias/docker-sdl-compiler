@@ -33,7 +33,7 @@ curl -skL ${SDL_MIXER_URL} -o SDL2_mixer-${SDL_MIXER_VERSION}.tar.gz \
   && cd / && rm -rf /SDL2_mixer-${SDL_MIXER_VERSION} SDL2_mixer-${SDL_MIXER_VERSION}.tar.gz
 
 SDL_NET_URL="https://github.com/libsdl-org/SDL_net/releases/download/release-${SDL_NET_VERSION}/SDL2_net-${SDL_NET_VERSION}.tar.gz"
-curl -skL ${SDL_NET_URL} -o SDL2_mixer-${SDL_NET_VERSION}.tar.gz \
+curl -skL ${SDL_NET_URL} -o SDL2_net-${SDL_NET_VERSION}.tar.gz \
   && tar xf SDL2_net-${SDL_NET_VERSION}.tar.gz \
   && cd /SDL2_net-${SDL_NET_VERSION} && ./configure && make && make install \
   && cd / && rm -rf /SDL2_net-${SDL_NET_VERSION} SDL2_net-${SDL_NET_VERSION}.tar.gz
