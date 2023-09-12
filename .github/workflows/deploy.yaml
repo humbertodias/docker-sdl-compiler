@@ -6,7 +6,20 @@ on:
         sdlversion:
           default: "2.28.3"
           description: "SDL Version"
-  
+        sdlttfversion:
+            default: "2.20.2"
+            description: "SDLTTF Version"
+        sdlimageversion:
+            default: "2.6.3"
+            description: "SDLImage Version"
+        sdlmixerversion:
+            default: "2.6.3"
+            description: "SDLMixer Version"
+        sdlnetversion:
+            default: "2.2.0"
+            description: "SDLNet Version"
+            
+
 jobs:
   build:
     name: Deploy - SDL v${{ github.event.inputs.sdlversion }}
@@ -31,4 +44,8 @@ jobs:
       - name: Build and Deploy
         run: |
             make build push \
-            SDL_VERSION=${{ github.event.inputs.sdlversion }}
+            SDL_VERSION=${{ github.event.inputs.sdlversion }} \
+            SDL_TTF_VERSION=${{ github.event.inputs.sdlttfversion }} \
+            SDL_IMAGE_VERSION=${{ github.event.inputs.sdlimageversion }} \
+            SDL_MIXER_VERSION=${{ github.event.inputs.sdlmixerversion }} \
+            SDL_NET_VERSION=${{ github.event.inputs.sdlnetversion }} \
