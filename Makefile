@@ -35,3 +35,6 @@ run-it:	docker-build
 clean:
 	docker ps -f name=${TAG_NAME} -qa | xargs docker rm -f
 	docker image ls --filter 'reference=${TAG_NAME}' -qa | xargs docker rmi -f
+
+format:
+	shfmt -w fn.sh
