@@ -33,6 +33,6 @@ ARG SDL_NET_VERSION=2.2.0
 ADD setup-*.sh /
 RUN bash setup-sdl1.sh
 RUN bash setup-sdl2.sh ${SDL_VERSION} ${SDL_TTF_VERSION} ${SDL_IMAGE_VERSION} ${SDL_MIXER_VERSION} ${SDL_NET_VERSION}
-RUN bash emsdk.sh
+RUN bash setup-emsdk.sh
 
 EXPOSE 8080
