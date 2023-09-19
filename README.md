@@ -12,6 +12,6 @@ SDL_PROJECT_PATH="~/my-sdl-project"
 SDL_PROJECT_COMPILER_CMD="g++ main.cpp -o main -g `sdl2-config --cflags --static-libs`"
 docker run -v $SDL_PROJECT_PATH:/tmp/workdir \
 -w /tmp/workdir \
--ti hldtux:sdl-compiler:$SDL_VERSION \
+-ti hldtux/sdl-compiler:$SDL_VERSION \
 bash -c "$SDL_PROJECT_COMPILER_CMD"
 ```
