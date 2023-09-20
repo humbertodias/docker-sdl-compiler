@@ -27,7 +27,7 @@ login:
 push: 	tag
 	docker push ${DOCKERHUB_USERNAME}/${TAG_NAME}
 
-run-it:	docker-build
+shell:	build
 	docker run -v $(shell pwd):/tmp/workdir -w /tmp/workdir \
 	-ti ${TAG_NAME} \
 	bash
