@@ -1,4 +1,4 @@
-name: Deploy - Docker Image
+name: ci-docker
 
 on:
  workflow_dispatch:
@@ -20,8 +20,7 @@ on:
             description: "SDLNet Version"
             
 jobs:
-  build:
-    name: Deploy - SDL v${{ github.event.inputs.sdlversion }}
+  dockerhub-push:
     runs-on: ubuntu-latest
     environment: DockerHub
     strategy:
