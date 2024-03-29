@@ -4,22 +4,23 @@ ENV TZ=America/Sao_Paulo
 
 # Update and install cross-platform build dependencies
 RUN apt update && apt install -y \
+    build-essential \
+    cmake \
+    file \
     gcc \
     g++ \
     gcc-multilib \
     g++-multilib \
-    build-essential \
-    xutils-dev \
+    g++-mingw-w64-x86-64 \
+    libgsl-dev \
     libreadline6-dev \
+    libsdl2-gfx-dev \
     libncurses5-dev \
+    libwebp-dev \
+    meson \
     mingw-w64 \
     mingw-w64-tools \
-    g++-mingw-w64-x86-64 \
-    libwebp-dev \
-    libgsl-dev \
-    libsdl2-gfx-dev \
-    cmake \
-    file    
+    xutils-dev
 
 # Install other dependencies
 RUN apt install -y make xterm sudo build-essential git zip curl valgrind clang-format
