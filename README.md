@@ -2,7 +2,7 @@
 
 # SDL-Compiler
 
-Docker container [sdl-compiler](https://hub.docker.com/r/hldtux/sdl-compiler)
+Docker container [sdl-compiler](https://hub.docker.com/r/hldtux/sdl-compiler) to cross-compiling SDL application that contains:
 * [SDL 1.x](https://www.libsdl.org/)
 * [SDL 2.x](https://www.libsdl.org/)
 * [empscripten](https://emscripten.org/)

@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy - Docker Image
 
 on:
  workflow_dispatch:
@@ -19,12 +19,25 @@ on:
             default: "2.2.0"
             description: "SDLNet Version"
             
-
 jobs:
   build:
     name: Deploy - SDL v${{ github.event.inputs.sdlversion }}
     runs-on: ubuntu-latest
     environment: DockerHub
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - linux/amd64
+          - linux/arm/v7
+          - linux/arm64/v8
+          # - linux/386
+          # - linux/ppc64le
+          # - linux/s390x
+
+    env:
+      DOCKERHUB_REPONAME: sdl-compiler
+      DOCKERHUB_REPOTAG: ${{ github.event.inputs.sdlnetversion }}
 
     steps:
 
@@ -41,11 +54,41 @@ jobs:
             username: ${{ secrets.DOCKERHUB_USERNAME }}
             password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and Deploy
-        run: |
-            make build push \
-            SDL_VERSION=${{ github.event.inputs.sdlversion }} \
-            SDL_TTF_VERSION=${{ github.event.inputs.sdlttfversion }} \
-            SDL_IMAGE_VERSION=${{ github.event.inputs.sdlimageversion }} \
-            SDL_MIXER_VERSION=${{ github.event.inputs.sdlmixerversion }} \
-            SDL_NET_VERSION=${{ github.event.inputs.sdlnetversion }} \
+      - name: README to Dockerhub
+        uses: christian-korneck/update-container-description-action@v1
+        env:
+          DOCKER_USER: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKER_PASS: ${{ secrets.DOCKERHUB_TOKEN }}
+        with:
+          destination_container_repo: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPONAME }}
+          provider: dockerhub
+          short_description: 'A Docker Image for SDL Development'
+          readme_file: 'README.md'
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: ${{ matrix.platform }}
+          push: true
+          build-args: |
+            SDL_VERSION=${{ github.event.inputs.sdlversion }}
+            SDL_TTF_VERSION=${{ github.event.inputs.sdlttfversion }}
+            SDL_IMAGE_VERSION=${{ github.event.inputs.sdlimageversion }}
+            SDL_MIXER_VERSION=${{ github.event.inputs.sdlmixerversion }}
+            SDL_NET_VERSION=${{ github.event.inputs.sdlnetversion }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPONAME }}:${{ env.DOCKERHUB_REPOTAG }}          
+
