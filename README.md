@@ -1,8 +1,14 @@
 [![Deploy](https://github.com/humbertodias/docker-sdl-compiler/actions/workflows/deploy.yaml/badge.svg)](https://github.com/humbertodias/docker-sdl-compiler/actions/workflows/deploy.yaml)
 
-# docker-sdl-compiler
+# SDL-Compiler
 
-Docker container [sdl-compiler](https://hub.docker.com/r/hldtux/sdl-compiler) with [SDL](https://www.libsdl.org/) 1/2 + [empscripten](https://emscripten.org/) + tools to compile a C/C++ project
+Docker container [sdl-compiler](https://hub.docker.com/r/hldtux/sdl-compiler)
+* [SDL 1.x](https://www.libsdl.org/)
+* [SDL 2.x](https://www.libsdl.org/)
+* [empscripten](https://emscripten.org/)
+* [mingw](http://mingw-w64.org)
+* Tools to compile a C/C++ project
+
 
 ### How to use
 
