@@ -7,7 +7,7 @@ Docker container [sdl-compiler](https://hub.docker.com/r/hldtux/sdl-compiler) wi
 ### How to use
 
 ```shell
-SDL_VERSION=2.28.3
+SDL_VERSION=2.30.1
 SDL_PROJECT_PATH="~/my-sdl-project"
 SDL_PROJECT_COMPILER_CMD="g++ main.cpp -o main -g `sdl2-config --cflags --static-libs`"
 docker run -v $SDL_PROJECT_PATH:/tmp/workdir \
