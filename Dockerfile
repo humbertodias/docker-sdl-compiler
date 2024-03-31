@@ -21,11 +21,7 @@ RUN apt update && apt install -y \
     xutils-dev
 
 # Run architecture detection and install dependencies if architecture is amd64
-RUN if [ "$(uname -m)" = "x86_64" ]; then \
-        apt install -y gcc-multilib g++-multilib \
-    else \
-        echo "Architecture is not amd64"; \ 
-    fi
+RUN if [ "$(uname -m)" = "x86_64" ]; then apt install -y gcc-multilib g++-multilib ; else echo "Architecture is not amd64"; fi ;
 
 # Install other dependencies
 RUN apt install -y make xterm sudo build-essential git zip curl valgrind clang-format
