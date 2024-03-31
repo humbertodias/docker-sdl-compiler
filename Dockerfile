@@ -9,8 +9,6 @@ RUN apt update && apt install -y \
     file \
     gcc \
     g++ \
-    gcc-multilib \
-    g++-multilib \
     g++-mingw-w64-x86-64 \
     libgsl-dev \
     libreadline6-dev \
@@ -21,6 +19,13 @@ RUN apt update && apt install -y \
     mingw-w64 \
     mingw-w64-tools \
     xutils-dev
+
+# Run architecture detection and install dependencies if architecture is amd64
+RUN if [ "$(uname -m)" = "x86_64" ]; then \
+        apt install -y gcc-multilib g++-multilib \
+    else \
+        echo "Architecture is not amd64"; \ 
+    fi
 
 # Install other dependencies
 RUN apt install -y make xterm sudo build-essential git zip curl valgrind clang-format
