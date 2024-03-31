@@ -15,9 +15,6 @@ build:
 	--build-arg SDL_NET_VERSION=${SDL_NET_VERSION} \
 	-t ${TAG_NAME}
 
-build-linux:
-	DOCKER_DEFAULT_PLATFORM=linux/amd64 $(MAKE) build
-
 tag:
 	docker tag ${TAG_NAME} ${DOCKERHUB_USERNAME}/${TAG_NAME}
 

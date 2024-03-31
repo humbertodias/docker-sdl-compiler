@@ -8,6 +8,7 @@ RUN apt update && apt install -y \
     cmake \
     file \
     gcc \
+    gcc-mingw-w64-x86-64 \
     g++ \
     g++-mingw-w64-x86-64 \
     libgsl-dev \
