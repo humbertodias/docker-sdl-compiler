@@ -34,3 +34,21 @@ install_sdl2() {
     ./configure && make --jobs=${NPROC} && make --jobs=${NPROC} install &&
     rm -rf ${WORKDIR}
 }
+
+
+install_sdl3() {
+    NAME=$1
+    VERSION=$2
+    NAME_WITHOUT_NUMBER=$(echo $NAME | sed -r 's/3//g')
+    FOLDER_NAME=${NAME}-${VERSION}
+    URL=https://github.com/libsdl-org/${NAME_WITHOUT_NUMBER}/releases/download/preview-${VERSION}/${FOLDER_NAME}.tar.gz
+    echo $URL
+    NPROC=$(nproc)
+    WORKDIR=$(mktemp -d --suffix=sdl)
+    cd ${WORKDIR} &&
+    curl -skL $URL | tar xvz --strip-components=1 &&
+    cmake -DCMAKE_BUILD_TYPE=Release . && 
+    cmake --build . --config Release --parallel
+    cmake --install . --config Release
+    rm -rf ${WORKDIR}
+}

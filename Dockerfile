@@ -30,11 +30,12 @@ RUN apt install -y make xterm sudo build-essential git zip curl valgrind clang-f
 # bash as default
 SHELL ["/bin/bash", "-c"]
 
-ARG SDL_VERSION=2.30.2
+ARG SDL_VERSION=2.30.11
 ARG SDL_TTF_VERSION=2.22.0
 ARG SDL_IMAGE_VERSION=2.8.2
 ARG SDL_MIXER_VERSION=2.8.0
 ARG SDL_NET_VERSION=2.2.0
+ARG SDL3_VERSION=3.1.6
 
 ADD fn.sh /
 RUN source /fn.sh \
@@ -44,6 +45,7 @@ RUN source /fn.sh \
 && install_sdl2 SDL2_ttf ${SDL_TTF_VERSION} \
 && install_sdl2 SDL2_image ${SDL_IMAGE_VERSION} \
 && install_sdl2 SDL2_mixer ${SDL_MIXER_VERSION} \
-&& install_sdl2 SDL2_net ${SDL_NET_VERSION}
+&& install_sdl2 SDL2_net ${SDL_NET_VERSION} \
+&& install_sdl3 SDL3 ${SDL3_VERSION}
 
 EXPOSE 8080
