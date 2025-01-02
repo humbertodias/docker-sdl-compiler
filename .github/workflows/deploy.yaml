@@ -4,7 +4,7 @@ on:
  workflow_dispatch:
     inputs:
         sdlversion:
-          default: "2.30.2"
+          default: "2.30.11"
           description: "SDL Version"
         sdlttfversion:
             default: "2.22.0"
@@ -18,6 +18,9 @@ on:
         sdlnetversion:
             default: "2.2.0"
             description: "SDLNet Version"
+        sdl3version:
+          default: "3.1.6"
+          description: "SDL3 Version"
             
 jobs:
   dockerhub-push:
@@ -90,5 +93,6 @@ jobs:
             SDL_IMAGE_VERSION=${{ github.event.inputs.sdlimageversion }}
             SDL_MIXER_VERSION=${{ github.event.inputs.sdlmixerversion }}
             SDL_NET_VERSION=${{ github.event.inputs.sdlnetversion }}
+            SDL3_VERSION=${{ github.event.inputs.sdl3version }}
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPONAME }}:${{ env.DOCKERHUB_REPOTAG }}          
 
