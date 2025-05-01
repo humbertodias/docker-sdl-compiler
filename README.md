@@ -15,7 +15,7 @@ Docker container [sdl-compiler](https://hub.docker.com/r/hldtux/sdl-compiler) to
 
 SDL1
 ```shell
-SDL_VERSION=2.30.11
+SDL_VERSION=1.2
 SDL_PROJECT_PATH="~/my-sdl-project"
 SDL_PROJECT_COMPILER_CMD="g++ main.cpp -o main -g `sdl-config --cflags --static-libs`"
 docker run -v $SDL_PROJECT_PATH:/tmp/workdir \
@@ -26,7 +26,7 @@ bash -c "$SDL_PROJECT_COMPILER_CMD"
 
 SDL2
 ```shell
-SDL_VERSION=2.30.11
+SDL_VERSION=2.32.4
 SDL_PROJECT_PATH="~/my-sdl-project"
 SDL_PROJECT_COMPILER_CMD="g++ main.cpp -o main -g `sdl2-config --cflags --static-libs`"
 docker run -v $SDL_PROJECT_PATH:/tmp/workdir \
@@ -37,7 +37,7 @@ bash -c "$SDL_PROJECT_COMPILER_CMD"
 
 SDL3
 ```shell
-SDL3_VERSION=3.1.6
+SDL3_VERSION=3.2.10
 SDL_PROJECT_PATH="~/my-sdl-project"
 SDL_PROJECT_COMPILER_CMD="g++ main.cpp -o main -g `pkg-config sdl3 --cflags --libs`"
 docker run -v $SDL_PROJECT_PATH:/tmp/workdir \
