@@ -8,10 +8,8 @@ RUN apt update && apt install -y \
     cmake \
     file \
     gcc \
-    gcc-aarch64-linux-gnu \
     gcc-mingw-w64-x86-64 \
     g++ \
-    g++-aarch64-linux-gnu \
     g++-mingw-w64-x86-64 \
     libgsl-dev \
     libreadline6-dev \
@@ -21,38 +19,13 @@ RUN apt update && apt install -y \
     meson \
     mingw-w64 \
     mingw-w64-tools \
-    xutils-dev \
-    clang \
-    llvm \
-    libz-dev \
-    curl \
-    git \
-    wget \
-    zip \
-    unzip \
-    xz-utils
+    xutils-dev
 
 # Run architecture detection and install dependencies if architecture is amd64
 RUN if [ "$(uname -m)" = "x86_64" ]; then apt install -y gcc-multilib g++-multilib ; else echo "Architecture is not amd64"; fi ;
 
 # Install other dependencies
 RUN apt install -y make xterm sudo build-essential git zip curl valgrind clang-format
-
-# Install osxcross dependencies for macOS cross-compilation
-RUN apt install -y \
-    libxml2-dev \
-    libssl-dev \
-    libbz2-dev \
-    zlib1g-dev \
-    libmpc-dev \
-    libmpfr-dev \
-    libgmp-dev
-
-# Set C++11 as the standard for g++, MinGW, ARM64, and macOS
-ENV CXXFLAGS="-std=c++11"
-ENV CXXFLAGS_MINGW="-std=c++11"
-ENV CXXFLAGS_AARCH64="-std=c++11"
-ENV CXXFLAGS_MACOS="-std=c++11"
 
 # bash as default
 SHELL ["/bin/bash", "-c"]
