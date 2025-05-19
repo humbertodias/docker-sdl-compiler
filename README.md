@@ -70,3 +70,6 @@ SDL3
 ```shell
 make build SDL_VERSION=3.2.14 SDL_TTF_VERSION=3.2.2 SDL_IMAGE_VERSION=3.2.4
 ```
+
+> [!IMPORTANT]  
+> Empscripten is only supported in SDL 2 and 3. It is not supported in SDL 1.
