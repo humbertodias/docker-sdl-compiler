@@ -15,22 +15,22 @@ Docker container [sdl-compiler](https://hub.docker.com/r/hldtux/sdl-compiler) to
 
 SDL1
 ```shell
-cd ~/my-sdl-project
+cd samples/sdl1
 SDL_VERSION=1.2 docker run --rm -ti -v $PWD:/workdir -w /workdir hldtux/sdl-compiler:$SDL_VERSION \
-bash -c "g++ main.cpp -o main -g `sdl-config --cflags --static-libs`"
+bash -c 'g++ main.cpp -o main -g `sdl-config --cflags --static-libs`'
 ```
 
 SDL2
 ```shell
-cd ~/my-sdl-project
+cd samples/sdl2
 SDL_VERSION=2.32.4 docker run --rm -ti -v $PWD:/workdir -w /workdir hldtux/sdl-compiler:$SDL_VERSION \
-bash -c "g++ main.cpp -o main -g `sdl2-config --cflags --static-libs`"
+bash -c 'g++ main.cpp -o main -g `sdl2-config --cflags --static-libs`'
 ```
 
 SDL3
 ```shell
-cd ~/my-sdl-project
+cd samples/sdl3
 SDL_VERSION=3.2.10 docker run --rm -ti -v $PWD:/workdir -w /workdir hldtux/sdl-compiler:$SDL_VERSION \
-bash -c "g++ main.cpp -o main -g `pkg-config sdl3 --cflags --libs`"
+bash -c 'g++ main.cpp -o main -g `pkg-config sdl3 --cflags --libs`'
 ```
 
