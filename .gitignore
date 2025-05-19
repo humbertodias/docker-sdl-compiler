@@ -1,3 +1,6 @@
 .vscode
 main
-samples/emsdk/index.*
+samples/emsdk/*.js
+samples/emsdk/*.html
+samples/emsdk/*.wasm
+samples/emsdk/*.map

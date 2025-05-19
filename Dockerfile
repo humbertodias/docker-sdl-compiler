@@ -52,6 +52,7 @@ RUN bash -c 'source /fn.sh && \
       install_sdl2 SDL2_net ${SDL_NET_VERSION} \
       ;; \
     3.*) \
+      install_emsdk && \
       install_sdl3 SDL3 ${SDL_VERSION} \
       ;; \
   esac'
