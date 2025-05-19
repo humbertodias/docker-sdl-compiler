@@ -38,14 +38,22 @@ ARG SDL_NET_VERSION=2.2.0
 ARG SDL3_VERSION=3.2.10
 
 ADD fn.sh /
-RUN source /fn.sh \
-&& install_emsdk \
-&& install_sdl1 \
-&& install_sdl2 SDL2 ${SDL_VERSION} \
-&& install_sdl2 SDL2_ttf ${SDL_TTF_VERSION} \
-&& install_sdl2 SDL2_image ${SDL_IMAGE_VERSION} \
-&& install_sdl2 SDL2_mixer ${SDL_MIXER_VERSION} \
-&& install_sdl2 SDL2_net ${SDL_NET_VERSION} \
-&& install_sdl3 SDL3 ${SDL3_VERSION}
+RUN bash -c 'source /fn.sh && \
+  case "$SDL_VERSION" in \
+    1.*) \
+      install_emsdk && install_sdl1 \
+      ;; \
+    2.*) \
+      install_emsdk && \
+      install_sdl2 SDL2 ${SDL_VERSION} && \
+      install_sdl2 SDL2_ttf ${SDL_TTF_VERSION} && \
+      install_sdl2 SDL2_image ${SDL_IMAGE_VERSION} && \
+      install_sdl2 SDL2_mixer ${SDL_MIXER_VERSION} && \
+      install_sdl2 SDL2_net ${SDL_NET_VERSION} \
+      ;; \
+    3.*) \
+      install_sdl3 SDL3 ${SDL_VERSION} \
+      ;; \
+  esac'
 
 EXPOSE 8080

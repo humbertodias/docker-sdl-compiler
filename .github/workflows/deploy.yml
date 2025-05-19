@@ -18,9 +18,6 @@ on:
         sdlnetversion:
             default: "2.2.0"
             description: "SDLNet Version"
-        sdl3version:
-          default: "3.2.10"
-          description: "SDL3 Version"
             
 jobs:
   dockerhub-push:
@@ -93,6 +90,5 @@ jobs:
             SDL_IMAGE_VERSION=${{ github.event.inputs.sdlimageversion }}
             SDL_MIXER_VERSION=${{ github.event.inputs.sdlmixerversion }}
             SDL_NET_VERSION=${{ github.event.inputs.sdlnetversion }}
-            SDL3_VERSION=${{ github.event.inputs.sdl3version }}
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPONAME }}:${{ env.DOCKERHUB_REPOTAG }}          
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPONAME }}:${{ env.DOCKERHUB_REPOTAG }}
 
