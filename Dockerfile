@@ -19,7 +19,9 @@ RUN apt update && apt install -y \
     meson \
     mingw-w64 \
     mingw-w64-tools \
-    xutils-dev
+    xutils-dev \
+    libfreetype6-dev \
+    libharfbuzz-dev
 
 # Run architecture detection and install dependencies if architecture is amd64
 RUN if [ "$(uname -m)" = "x86_64" ]; then apt install -y gcc-multilib g++-multilib ; else echo "Architecture is not amd64"; fi ;
@@ -35,7 +37,6 @@ ARG SDL_TTF_VERSION=2.22.0
 ARG SDL_IMAGE_VERSION=2.8.2
 ARG SDL_MIXER_VERSION=2.8.0
 ARG SDL_NET_VERSION=2.2.0
-ARG SDL3_VERSION=3.2.10
 
 ADD fn.sh /
 RUN bash -c 'source /fn.sh && \
@@ -53,7 +54,9 @@ RUN bash -c 'source /fn.sh && \
       ;; \
     3.*) \
       install_emsdk && \
-      install_sdl3 SDL3 ${SDL_VERSION} \
+      install_sdl3 SDL3 ${SDL_VERSION} && \
+      install_sdl3 SDL3_ttf ${SDL_TTF_VERSION} && \
+      install_sdl3 SDL3_image ${SDL_IMAGE_VERSION} \
       ;; \
   esac'
 
