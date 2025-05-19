@@ -13,7 +13,7 @@ function install_emsdk() {
     # Make the "latest" SDK "active" for the current user. (writes .emscripten file)
     ./emsdk activate latest
     # Activate PATH and other environment variables in the current terminal
-    echo "source /opt/emsdk/emsdk_env.sh" >> ~/.profile
+    echo "source /opt/emsdk/emsdk_env.sh" >> ~/.bashrc
 }
 
 install_sdl1() {
@@ -41,7 +41,7 @@ install_sdl3() {
     VERSION=$2
     NAME_WITHOUT_NUMBER=$(echo $NAME | sed -r 's/3//g')
     FOLDER_NAME=${NAME}-${VERSION}
-    URL=https://github.com/libsdl-org/${NAME_WITHOUT_NUMBER}/releases/download/preview-${VERSION}/${FOLDER_NAME}.tar.gz
+    URL=https://github.com/libsdl-org/${NAME_WITHOUT_NUMBER}/releases/download/release-${VERSION}/${FOLDER_NAME}.tar.gz
     echo $URL
     NPROC=$(nproc)
     WORKDIR=$(mktemp -d --suffix=sdl)
