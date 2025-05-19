@@ -18,9 +18,7 @@ SDL1
 SDL_VERSION=1.2
 SDL_PROJECT_PATH="~/my-sdl-project"
 SDL_PROJECT_COMPILER_CMD="g++ main.cpp -o main -g `sdl-config --cflags --static-libs`"
-docker run -v $SDL_PROJECT_PATH:/tmp/workdir \
--w /tmp/workdir \
--ti hldtux/sdl-compiler:$SDL_VERSION \
+docker run --rm -ti -v $SDL_PROJECT_PATH:/workdir -w /workdir hldtux/sdl-compiler:$SDL_VERSION \
 bash -c "$SDL_PROJECT_COMPILER_CMD"
 ```
 
@@ -29,9 +27,7 @@ SDL2
 SDL_VERSION=2.32.4
 SDL_PROJECT_PATH="~/my-sdl-project"
 SDL_PROJECT_COMPILER_CMD="g++ main.cpp -o main -g `sdl2-config --cflags --static-libs`"
-docker run -v $SDL_PROJECT_PATH:/tmp/workdir \
--w /tmp/workdir \
--ti hldtux/sdl-compiler:$SDL_VERSION \
+docker run --rm -ti -v $SDL_PROJECT_PATH:/workdir -w /workdir hldtux/sdl-compiler:$SDL_VERSION \
 bash -c "$SDL_PROJECT_COMPILER_CMD"
 ```
 
@@ -40,9 +36,7 @@ SDL3
 SDL3_VERSION=3.2.10
 SDL_PROJECT_PATH="~/my-sdl-project"
 SDL_PROJECT_COMPILER_CMD="g++ main.cpp -o main -g `pkg-config sdl3 --cflags --libs`"
-docker run -v $SDL_PROJECT_PATH:/tmp/workdir \
--w /tmp/workdir \
--ti hldtux/sdl-compiler:$SDL_VERSION \
+docker run --rm -ti -v $SDL_PROJECT_PATH:/workdir -w /workdir hldtux/sdl-compiler:$SDL_VERSION \
 bash -c "$SDL_PROJECT_COMPILER_CMD"
 ```
 
