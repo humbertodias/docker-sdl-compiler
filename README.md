@@ -30,7 +30,7 @@ SDL_PROJECT=./samples/sdl1
 docker run --rm -ti \
   -v $SDL_PROJECT:/workdir \
   -w /workdir \
-  sdl-compiler:$SDL_VERSION \
+  hldtux/sdl-compiler:$SDL_VERSION \
   bash -ic 'g++ main.cpp -o main -g `sdl-config --cflags --static-libs`'
 ```
 
