@@ -1,3 +1,4 @@
+EMSDK_VERSION=4.0.9
 # SDL3
 SDL_VERSION=3.2.14
 SDL_TTF_VERSION=3.2.2
@@ -13,6 +14,7 @@ TAG_NAME=sdl-compiler:${SDL_VERSION}
 
 build:
 	docker build . \
+	--build-arg EMSDK_VERSION=${EMSDK_VERSION} \
 	--build-arg SDL_VERSION=${SDL_VERSION} \
 	--build-arg SDL_TTF_VERSION=${SDL_TTF_VERSION} \
 	--build-arg SDL_IMAGE_VERSION=${SDL_IMAGE_VERSION} \

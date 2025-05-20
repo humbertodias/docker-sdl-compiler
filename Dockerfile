@@ -1,9 +1,11 @@
 FROM debian:bookworm-slim
-ENV DEBIAN_FRONTEND=noninteractive
-ENV TZ=America/Sao_Paulo
 
-# Update and install cross-platform build dependencies
-RUN apt update && apt install -y \
+ENV DEBIAN_FRONTEND=noninteractive \
+    TZ=America/Sao_Paulo \
+    EMSDK_QUIET=1
+
+# Install essential and cross-platform build dependencies
+RUN apt update && apt install -y --no-install-recommends \
     build-essential \
     cmake \
     file \
@@ -21,42 +23,57 @@ RUN apt update && apt install -y \
     mingw-w64-tools \
     xutils-dev \
     libfreetype6-dev \
-    libharfbuzz-dev
+    libharfbuzz-dev \
+    make \
+    xterm \
+    sudo \
+    git \
+    zip \
+    curl \
+    ca-certificates \
+    valgrind \
+    clang-format && \
+    # Install 32-bit libs if architecture is amd64
+    if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
+        apt install -y --no-install-recommends gcc-multilib g++-multilib; \
+    fi
 
-# Run architecture detection and install dependencies if architecture is amd64
-RUN if [ "$(uname -m)" = "x86_64" ]; then apt install -y gcc-multilib g++-multilib ; else echo "Architecture is not amd64"; fi ;
-
-# Install other dependencies
-RUN apt install -y make xterm sudo build-essential git zip curl valgrind clang-format
-
-# bash as default
+# Set bash as default shell
 SHELL ["/bin/bash", "-c"]
 
+# SDL version arguments
 ARG SDL_VERSION=2.32.4
 ARG SDL_TTF_VERSION=2.22.0
 ARG SDL_IMAGE_VERSION=2.8.2
 ARG SDL_MIXER_VERSION=2.8.0
 ARG SDL_NET_VERSION=2.2.0
+ARG EMSDK_VERSION=4.0.9
 
+# Add custom helper script
 ADD fn.sh /
-RUN bash -c 'source /fn.sh && \
-  install_emsdk && \
-  case "$SDL_VERSION" in \
-    1.*) \
-      install_sdl1 \
-      ;; \
-    2.*) \
-      install_sdl2 SDL2 ${SDL_VERSION} && \
-      install_sdl2 SDL2_ttf ${SDL_TTF_VERSION} && \
-      install_sdl2 SDL2_image ${SDL_IMAGE_VERSION} && \
-      install_sdl2 SDL2_mixer ${SDL_MIXER_VERSION} && \
-      install_sdl2 SDL2_net ${SDL_NET_VERSION} \
-      ;; \
-    3.*) \
-      install_sdl3 SDL3 ${SDL_VERSION} && \
-      install_sdl3 SDL3_ttf ${SDL_TTF_VERSION} && \
-      install_sdl3 SDL3_image ${SDL_IMAGE_VERSION} \
-      ;; \
-  esac'
+
+# Install emsdk and SDL libraries
+RUN source /fn.sh && \
+    install_emsdk ${EMSDK_VERSION} && \
+    case "$SDL_VERSION" in \
+        1.*) \
+            install_sdl1 ;; \
+        2.*) \
+            install_sdl2 SDL2 ${SDL_VERSION} && \
+            install_sdl2 SDL2_ttf ${SDL_TTF_VERSION} && \
+            install_sdl2 SDL2_image ${SDL_IMAGE_VERSION} && \
+            install_sdl2 SDL2_mixer ${SDL_MIXER_VERSION} && \
+            install_sdl2 SDL2_net ${SDL_NET_VERSION} ;; \
+        3.*) \
+            install_sdl3 SDL3 ${SDL_VERSION} && \
+            install_sdl3 SDL3_ttf ${SDL_TTF_VERSION} && \
+            install_sdl3 SDL3_image ${SDL_IMAGE_VERSION} ;; \
+    esac
+
+# Clean up
+RUN apt remove --purge -y manpages man-db && \
+    apt autoremove -y && \
+    apt clean && \
+    rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man /usr/share/locale /tmp/*
 
 EXPOSE 8080

@@ -18,6 +18,9 @@ on:
         sdlnetversion:
             default: "2.2.0"
             description: "SDLNet Version"
+        emsdkversion:
+          default: "4.0.9"
+          description: "Emscripten Version"
             
 jobs:
   dockerhub-push:
@@ -29,11 +32,6 @@ jobs:
         platform:
           - linux/amd64
           - linux/arm64
-          # - linux/arm/v7
-          # - linux/arm64/v8
-          # - linux/386
-          # - linux/ppc64le
-          # - linux/s390x
 
     env:
       DOCKERHUB_REPONAME: sdl-compiler
@@ -90,5 +88,6 @@ jobs:
             SDL_IMAGE_VERSION=${{ github.event.inputs.sdlimageversion }}
             SDL_MIXER_VERSION=${{ github.event.inputs.sdlmixerversion }}
             SDL_NET_VERSION=${{ github.event.inputs.sdlnetversion }}
+            EMSDK_VERSION=${{ github.event.inputs.emsdkversion }}
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPONAME }}:${{ env.DOCKERHUB_REPOTAG }}
 
