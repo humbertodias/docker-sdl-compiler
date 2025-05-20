@@ -40,12 +40,12 @@ ARG SDL_NET_VERSION=2.2.0
 
 ADD fn.sh /
 RUN bash -c 'source /fn.sh && \
+  install_emsdk && \
   case "$SDL_VERSION" in \
     1.*) \
-      install_emsdk && install_sdl1 \
+      install_sdl1 \
       ;; \
     2.*) \
-      install_emsdk && \
       install_sdl2 SDL2 ${SDL_VERSION} && \
       install_sdl2 SDL2_ttf ${SDL_TTF_VERSION} && \
       install_sdl2 SDL2_image ${SDL_IMAGE_VERSION} && \
@@ -53,7 +53,6 @@ RUN bash -c 'source /fn.sh && \
       install_sdl2 SDL2_net ${SDL_NET_VERSION} \
       ;; \
     3.*) \
-      install_emsdk && \
       install_sdl3 SDL3 ${SDL_VERSION} && \
       install_sdl3 SDL3_ttf ${SDL_TTF_VERSION} && \
       install_sdl3 SDL3_image ${SDL_IMAGE_VERSION} \
