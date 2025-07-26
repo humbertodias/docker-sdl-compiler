@@ -42,12 +42,12 @@ RUN apt update && apt install -y --no-install-recommends \
 SHELL ["/bin/bash", "-c"]
 
 # SDL version arguments
-ARG SDL_VERSION=2.32.4
-ARG SDL_TTF_VERSION=2.22.0
-ARG SDL_IMAGE_VERSION=2.8.2
-ARG SDL_MIXER_VERSION=2.8.0
+ARG SDL_VERSION=2.32.8
+ARG SDL_TTF_VERSION=2.24.0
+ARG SDL_IMAGE_VERSION=2.8.8
+ARG SDL_MIXER_VERSION=2.8.1
 ARG SDL_NET_VERSION=2.2.0
-ARG EMSDK_VERSION=4.0.9
+ARG EMSDK_VERSION=4.0.11
 
 # Add custom helper script
 ADD fn.sh /
