@@ -1,27 +1,13 @@
 name: ci-docker
 
 on:
- workflow_dispatch:
+  workflow_dispatch:
     inputs:
-        sdlversion:
-          default: "2.32.4"
-          description: "SDL Version"
-        sdlttfversion:
-            default: "2.22.0"
-            description: "SDLTTF Version"
-        sdlimageversion:
-            default: "2.8.2"
-            description: "SDLImage Version"
-        sdlmixerversion:
-            default: "2.8.0"
-            description: "SDLMixer Version"
-        sdlnetversion:
-            default: "2.2.0"
-            description: "SDLNet Version"
-        emsdkversion:
-          default: "4.0.9"
-          description: "Emscripten Version"
-            
+      target_version:
+        description: 'SDL version target (sdl1, sdl2, sdl3)'
+        required: true
+        default: 'sdl2'
+
 jobs:
   dockerhub-push:
     runs-on: ubuntu-latest
@@ -33,61 +19,47 @@ jobs:
           - linux/amd64
           - linux/arm64
 
-    env:
-      DOCKERHUB_REPONAME: sdl-compiler
-      DOCKERHUB_REPOTAG: ${{ github.event.inputs.sdlnetversion }}
-
     steps:
-
-      # Checkout
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          lfs: true
-          path: .
-    
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-            username: ${{ secrets.DOCKERHUB_USERNAME }}
-            password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: README to Dockerhub
-        uses: christian-korneck/update-container-description-action@v1
-        env:
-          DOCKER_USER: ${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKER_PASS: ${{ secrets.DOCKERHUB_TOKEN }}
-        with:
-          destination_container_repo: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPONAME }}
-          provider: dockerhub
-          short_description: 'A Docker Image for SDL Development'
-          readme_file: 'README.md'
+      - name: Load environment variables from selected file
+        run: |
+          echo "Using version: ${{ github.event.inputs.target_version }}"
+          ENV_FILE=".github/env/${{ github.event.inputs.target_version }}.env"
+          if [ ! -f "$ENV_FILE" ]; then
+            echo "Env file not found: $ENV_FILE"
+            exit 1
+          fi
+          set -a
+          source "$ENV_FILE"
+          set +a
+          echo "SDL_VERSION=$SDL_VERSION" >> $GITHUB_ENV
+          echo "SDL_TTF_VERSION=$SDL_TTF_VERSION" >> $GITHUB_ENV
+          echo "SDL_IMAGE_VERSION=$SDL_IMAGE_VERSION" >> $GITHUB_ENV
+          echo "SDL_MIXER_VERSION=$SDL_MIXER_VERSION" >> $GITHUB_ENV
+          echo "SDL_NET_VERSION=$SDL_NET_VERSION" >> $GITHUB_ENV
+          echo "EMSDK_VERSION=$EMSDK_VERSION" >> $GITHUB_ENV
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+          echo "DOCKERHUB_REPONAME=sdl-compiler" >> $GITHUB_ENV
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push
-        id: docker_build
+      - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           platforms: ${{ matrix.platform }}
           push: true
           build-args: |
-            SDL_VERSION=${{ github.event.inputs.sdlversion }}
-            SDL_TTF_VERSION=${{ github.event.inputs.sdlttfversion }}
-            SDL_IMAGE_VERSION=${{ github.event.inputs.sdlimageversion }}
-            SDL_MIXER_VERSION=${{ github.event.inputs.sdlmixerversion }}
-            SDL_NET_VERSION=${{ github.event.inputs.sdlnetversion }}
-            EMSDK_VERSION=${{ github.event.inputs.emsdkversion }}
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPONAME }}:${{ env.DOCKERHUB_REPOTAG }}
-
+            SDL_VERSION=${{ env.SDL_VERSION }}
+            SDL_TTF_VERSION=${{ env.SDL_TTF_VERSION }}
+            SDL_IMAGE_VERSION=${{ env.SDL_IMAGE_VERSION }}
+            SDL_MIXER_VERSION=${{ env.SDL_MIXER_VERSION }}
+            SDL_NET_VERSION=${{ env.SDL_NET_VERSION }}
+            EMSDK_VERSION=${{ env.EMSDK_VERSION }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPONAME }}:${{ env.TAG_NAME }}
