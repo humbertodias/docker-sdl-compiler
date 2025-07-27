@@ -1,11 +1,11 @@
 #include <SDL/SDL.h>
-#include <stdio.h>
+#define SDL_Log(...) printf(__VA_ARGS__)
 
 int main(int argc, char *argv[])
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
-        printf("Unable to init SDL: %s\n", SDL_GetError());
+        SDL_Log("Unable to init SDL: %s", SDL_GetError());
         return 1;
     }
 
@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     SDL_Surface *screen = SDL_SetVideoMode(640, 480, 32, SDL_SWSURFACE);
     if (!screen)
     {
-        printf("Unable to set video mode: %s\n", SDL_GetError());
+        SDL_Log("Unable to set video mode: %s", SDL_GetError());
         return 1;
     }
 
