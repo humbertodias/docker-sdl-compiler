@@ -1,7 +1,7 @@
 #include <SDL3/SDL.h>
 
 int main(int argc, char* argv[]) {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    if (!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_Log("SDL_Init Error: %s", SDL_GetError());
         return 1;
     }
@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
     SDL_RenderClear(renderer);
     SDL_RenderPresent(renderer);
 

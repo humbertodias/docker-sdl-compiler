@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
+    SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 255));
     SDL_Flip(screen);
 
     int running = 1;
