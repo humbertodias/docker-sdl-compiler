@@ -10,17 +10,11 @@ RUN apt update && apt install -y --no-install-recommends \
     cmake \
     file \
     gcc \
-    gcc-mingw-w64-x86-64 \
     g++ \
-    g++-mingw-w64-x86-64 \
     libgsl-dev \
-    libreadline6-dev \
-    libsdl2-gfx-dev \
     libncurses5-dev \
     libwebp-dev \
     meson \
-    mingw-w64 \
-    mingw-w64-tools \
     xutils-dev \
     libfreetype6-dev \
     libharfbuzz-dev \
@@ -30,13 +24,21 @@ RUN apt update && apt install -y --no-install-recommends \
     git \
     zip \
     curl \
-    ca-certificates \
-    valgrind \
-    clang-format && \
-    # Install 32-bit libs if architecture is amd64
-    if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
-        apt install -y --no-install-recommends gcc-multilib g++-multilib; \
+    ca-certificates && \
+    arch=$(dpkg --print-architecture) && \
+    if [ "$arch" = "amd64" ]; then \
+        apt install -y --no-install-recommends \
+            gcc-mingw-w64-x86-64 \
+            g++-mingw-w64-x86-64 \
+            libreadline6-dev \
+            valgrind \
+            clang-format \
+            mingw-w64 \
+            mingw-w64-tools \
+            gcc-multilib \
+            g++-multilib; \
     fi
+
 
 # Set bash as default shell
 SHELL ["/bin/bash", "-c"]
