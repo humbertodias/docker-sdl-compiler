@@ -6,35 +6,16 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 # Install essential and cross-platform build dependencies
 RUN apt update && apt install -y --no-install-recommends \
-    build-essential \
-    cmake \
-    file \
-    gcc \
-    gcc-mingw-w64-x86-64 \
-    g++ \
-    g++-mingw-w64-x86-64 \
-    libgsl-dev \
-    libreadline6-dev \
-    libsdl2-gfx-dev \
-    libncurses5-dev \
-    libwebp-dev \
-    meson \
-    mingw-w64 \
-    mingw-w64-tools \
-    xutils-dev \
-    libfreetype6-dev \
-    libharfbuzz-dev \
-    make \
-    xterm \
-    sudo \
-    git \
-    zip \
-    curl \
-    ca-certificates \
-    valgrind \
-    clang-format && \
-    # Install 32-bit libs if architecture is amd64
-    if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
+    build-essential cmake file gcc g++ \
+    libgsl-dev libncurses5-dev libwebp-dev meson \
+    xutils-dev libfreetype6-dev libharfbuzz-dev make xterm sudo git zip curl ca-certificates && \
+    arch=$(dpkg --print-architecture) && \
+    if [ "$arch" = "amd64" ]; then \
+        apt install -y --no-install-recommends \
+        gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 \
+        mingw-w64 mingw-w64-tools \
+        valgrind clang-format \
+        libreadline6-dev; \
         apt install -y --no-install-recommends gcc-multilib g++-multilib; \
     fi
 
