@@ -55,6 +55,7 @@ jobs:
           context: .
           platforms: ${{ matrix.platform }}
           push: true
+          provenance: false
           build-args: |
             SDL_VERSION=${{ env.SDL_VERSION }}
             SDL_TTF_VERSION=${{ env.SDL_TTF_VERSION }}
