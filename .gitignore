@@ -1,5 +1,7 @@
 .vscode
 main
+main.dSYM
+main.o
 samples/emsdk/*.js
 samples/emsdk/*.html
 samples/emsdk/*.wasm
