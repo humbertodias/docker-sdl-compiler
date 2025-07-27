@@ -62,4 +62,4 @@ jobs:
             SDL_MIXER_VERSION=${{ env.SDL_MIXER_VERSION }}
             SDL_NET_VERSION=${{ env.SDL_NET_VERSION }}
             EMSDK_VERSION=${{ env.EMSDK_VERSION }}
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPONAME }}:${{ env.TAG_NAME }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.TAG_NAME }}
