@@ -1,4 +1,6 @@
 [![Deploy](https://github.com/humbertodias/docker-sdl-compiler/actions/workflows/deploy.yml/badge.svg)](https://github.com/humbertodias/docker-sdl-compiler/actions/workflows/deploy.yml)
+[![Docker Pulls](https://img.shields.io/docker/pulls/hldtux/sdl-compiler.svg)](https://hub.docker.com/r/hldtux/sdl-compiler)
+
 
 # SDL Compiler Docker Image
 
