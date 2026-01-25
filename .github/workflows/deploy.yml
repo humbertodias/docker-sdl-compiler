@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Load environment variables from selected file
         run: |
@@ -49,16 +49,16 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: README to Dockerhub
-        uses: christian-korneck/update-container-description-action@v1
-        env:
-          DOCKER_USER: ${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKER_PASS: ${{ secrets.DOCKERHUB_TOKEN }}
-        with:
-          destination_container_repo: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPONAME }}
-          provider: dockerhub
-          short_description: 'A Docker Image for SDL Development'
-          readme_file: 'README.md'
+      # - name: README to Dockerhub
+      #   uses: christian-korneck/update-container-description-action@v1
+      #   env:
+      #     DOCKER_USER: ${{ secrets.DOCKERHUB_USERNAME }}
+      #     DOCKER_PASS: ${{ secrets.DOCKERHUB_TOKEN }}
+      #   with:
+      #     destination_container_repo: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPONAME }}
+      #     provider: dockerhub
+      #     short_description: 'A Docker Image for SDL Development'
+      #     readme_file: 'README.md'
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
