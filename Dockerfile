@@ -67,6 +67,7 @@ RUN source /fn.sh && \
             install_sdl2 SDL2_mixer ${SDL_MIXER_VERSION} && \
             install_sdl2 SDL2_net ${SDL_NET_VERSION} ;; \
         3.*) \
+            install_sdl3_dependencies && \
             install_sdl3 SDL3 ${SDL_VERSION} && \
             install_sdl3 SDL3_ttf ${SDL_TTF_VERSION} && \
             install_sdl3 SDL3_image ${SDL_IMAGE_VERSION} ;; \

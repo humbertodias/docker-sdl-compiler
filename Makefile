@@ -1,5 +1,9 @@
 VERSION ?= sdl2
 
+
+SHELL := /bin/bash
+.SHELLFLAGS := -eu -o pipefail -c
+
 include .github/env/$(VERSION).env
 export
 
@@ -11,7 +15,8 @@ build:
 	--build-arg SDL_IMAGE_VERSION=${SDL_IMAGE_VERSION} \
 	--build-arg SDL_MIXER_VERSION=${SDL_MIXER_VERSION} \
 	--build-arg SDL_NET_VERSION=${SDL_NET_VERSION} \
-	-t ${TAG_NAME}
+	-t ${TAG_NAME} \
+	--no-cache
 
 tag:
 	docker tag ${TAG_NAME} ${DOCKERHUB_USERNAME}/${TAG_NAME}
