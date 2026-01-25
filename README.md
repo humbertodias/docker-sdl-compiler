@@ -39,7 +39,7 @@ docker run --rm -ti \
 #### SDL 2.x
 
 ```bash
-SDL_VERSION=2.32.8
+SDL_VERSION=2.32.10
 SDL_PROJECT=./samples/sdl2
 
 docker run --rm -ti \
@@ -52,7 +52,7 @@ docker run --rm -ti \
 #### SDL 3.x
 
 ```bash
-SDL_VERSION=3.2.18
+SDL_VERSION=3.4.0
 SDL_PROJECT=./samples/sdl3
 
 docker run --rm -ti \
@@ -83,7 +83,7 @@ python -m http.server -d $SDL_PROJECT
 #### SDL 2.x (Web)
 
 ```bash
-SDL_VERSION=2.32.8
+SDL_VERSION=2.32.10
 SDL_PROJECT=./samples/emsdk
 
 docker run --rm -ti \
