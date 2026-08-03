@@ -1,4 +1,4 @@
-name: docker deploy
+name: deploy
 
 on:
   workflow_dispatch:
