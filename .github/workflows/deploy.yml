@@ -1,4 +1,4 @@
-name: ci-docker
+name: docker deploy
 
 on:
   workflow_dispatch:
