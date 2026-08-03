@@ -1,0 +1,112 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version: [sdl1, sdl2, sdl3]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Load environment variables
+        run: |
+          ENV_FILE=".github/env/${{ matrix.version }}.env"
+          if [ ! -f "$ENV_FILE" ]; then
+            echo "Env file not found: $ENV_FILE"
+            exit 1
+          fi
+          set -a
+          # shellcheck source=/dev/null
+          source "$ENV_FILE"
+          set +a
+          {
+            echo "SDL_VERSION=$SDL_VERSION"
+            echo "SDL_TTF_VERSION=${SDL_TTF_VERSION:-}"
+            echo "SDL_IMAGE_VERSION=${SDL_IMAGE_VERSION:-}"
+            echo "SDL_MIXER_VERSION=${SDL_MIXER_VERSION:-}"
+            echo "SDL_NET_VERSION=${SDL_NET_VERSION:-}"
+            echo "EMSDK_VERSION=$EMSDK_VERSION"
+            echo "TAG_NAME=$TAG_NAME"
+          } >> "$GITHUB_ENV"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          push: false
+          tags: ${{ env.TAG_NAME }}
+          cache-from: type=gha,scope=${{ matrix.version }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.version }}
+          build-args: |
+            SDL_VERSION=${{ env.SDL_VERSION }}
+            SDL_TTF_VERSION=${{ env.SDL_TTF_VERSION }}
+            SDL_IMAGE_VERSION=${{ env.SDL_IMAGE_VERSION }}
+            SDL_MIXER_VERSION=${{ env.SDL_MIXER_VERSION }}
+            SDL_NET_VERSION=${{ env.SDL_NET_VERSION }}
+            EMSDK_VERSION=${{ env.EMSDK_VERSION }}
+
+      - name: Compile native sample
+        run: |
+          case "${{ matrix.version }}" in
+            sdl1)
+              SAMPLE_DIR=samples/sdl1
+              BUILD_CMD='g++ main.cpp -o main -g `sdl-config --cflags --static-libs`'
+              ;;
+            sdl2)
+              SAMPLE_DIR=samples/sdl2
+              BUILD_CMD='g++ main.cpp -o main -g `sdl2-config --cflags --static-libs`'
+              ;;
+            sdl3)
+              SAMPLE_DIR=samples/sdl3
+              BUILD_CMD='g++ main.cpp -o main -g `pkg-config sdl3 --cflags --libs`'
+              ;;
+          esac
+
+          docker run --rm \
+            -v "$PWD/$SAMPLE_DIR:/workdir" \
+            -w /workdir \
+            "${{ env.TAG_NAME }}" \
+            bash -ic "$BUILD_CMD"
+
+          test -x "$SAMPLE_DIR/main"
+          file "$SAMPLE_DIR/main"
+
+      - name: Compile WebAssembly sample
+        run: |
+          case "${{ matrix.version }}" in
+            sdl1)
+              BUILD_CMD='emcc main-sdl1.cpp -o sdl1.html -s USE_SDL=1 -s WASM=1'
+              OUTPUT=samples/emsdk/sdl1.html
+              ;;
+            sdl2)
+              BUILD_CMD='emcc main-sdl2.cpp -o sdl2.html -s USE_SDL=2 -s WASM=1'
+              OUTPUT=samples/emsdk/sdl2.html
+              ;;
+            sdl3)
+              BUILD_CMD='emcc main-sdl3.cpp -o sdl3.html -s USE_SDL=3 -s WASM=1'
+              OUTPUT=samples/emsdk/sdl3.html
+              ;;
+          esac
+
+          docker run --rm \
+            -v "$PWD/samples/emsdk:/workdir" \
+            -w /workdir \
+            "${{ env.TAG_NAME }}" \
+            bash -ic "$BUILD_CMD"
+
+          test -f "$OUTPUT"
+          ls -la samples/emsdk/
