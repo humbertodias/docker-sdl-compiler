@@ -70,7 +70,8 @@ RUN source /fn.sh && \
             install_sdl3_dependencies && \
             install_sdl3 SDL3 ${SDL_VERSION} && \
             install_sdl3 SDL3_ttf ${SDL_TTF_VERSION} && \
-            install_sdl3 SDL3_image ${SDL_IMAGE_VERSION} ;; \
+            install_sdl3 SDL3_image ${SDL_IMAGE_VERSION} && \
+            install_sdl3 SDL3_mixer ${SDL_MIXER_VERSION} ;; \
     esac
 
 # Clean up
