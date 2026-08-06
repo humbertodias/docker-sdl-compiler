@@ -53,13 +53,13 @@ docker run --rm -ti \
 #### SDL 3.x
 
 ```bash
-SDL_VERSION=3.4.12
+SDL_VERSION=3.4.14
 SDL_PROJECT=./samples/sdl3
 
 docker run --rm -ti \
   -v $SDL_PROJECT:/workdir \
   -w /workdir \
-  hldtux/sdl-compiler:$SDL_VERSION \
+  sdl-compiler:$SDL_VERSION \
   bash -ic 'g++ main.cpp -o main -g `pkg-config sdl3 --cflags --libs`'
 ```
 

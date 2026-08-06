@@ -1,6 +1,5 @@
 VERSION ?= sdl2
 
-
 SHELL := /bin/bash
 .SHELLFLAGS := -eu -o pipefail -c
 
