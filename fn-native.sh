@@ -1,9 +1,95 @@
 #!/bin/bash
 
+refresh_autotools_config() {
+	# Old SDL 1.2 releases ship archaic config.guess that rejects aarch64.
+	# Prefer Debian's autotools-dev scripts when available.
+	local src_guess="/usr/share/misc/config.guess"
+	local src_sub="/usr/share/misc/config.sub"
+	local guess_dir
+	for guess_dir in build-scripts .; do
+		if [ -f "${guess_dir}/config.guess" ]; then
+			if [ -f "$src_guess" ]; then
+				cp "$src_guess" "${guess_dir}/config.guess"
+				cp "$src_sub" "${guess_dir}/config.sub"
+			else
+				curl -sL -o "${guess_dir}/config.guess" "https://git.savannah.gnu.org/cgit/config.git/plain/config.guess"
+				curl -sL -o "${guess_dir}/config.sub" "https://git.savannah.gnu.org/cgit/config.git/plain/config.sub"
+			fi
+			chmod +x "${guess_dir}/config.guess" "${guess_dir}/config.sub"
+		fi
+	done
+}
+
+patch_sdl12_x11() {
+	# libX11 >= 1.6 changed _XData32 prototype; release-1.2.15 needs this.
+	# Only touch _XData32 — _XRead32 must stay non-const.
+	if [ -f src/video/x11/SDL_x11sym.h ]; then
+		sed -i '/_XData32/s/register long \*data/register _Xconst long *data/' src/video/x11/SDL_x11sym.h
+	fi
+}
+
+install_freetype_config_shim() {
+	# Debian bookworm dropped freetype-config; SDL_ttf 2.0.x still needs it.
+	cat >/usr/local/bin/freetype-config <<'EOF'
+#!/bin/sh
+prefix=$(pkg-config --variable=prefix freetype2 2>/dev/null || echo /usr)
+case "$1" in
+	--prefix) echo "$prefix" ;;
+	--exec-prefix) echo "$prefix" ;;
+	--version|--ftversion) pkg-config --modversion freetype2 ;;
+	--cflags) pkg-config --cflags freetype2 ;;
+	--libs) pkg-config --libs freetype2 ;;
+	*) exit 1 ;;
+esac
+EOF
+	chmod +x /usr/local/bin/freetype-config
+}
+
+install_sdl1_source() {
+	REPO=$1
+	VERSION=$2
+	EXTRA_CONFIG=${3:-}
+	URL="https://github.com/libsdl-org/${REPO}/archive/refs/tags/release-${VERSION}.tar.gz"
+	echo "$URL"
+	NPROC=$(nproc)
+	WORKDIR=$(mktemp -d --suffix=sdl1)
+	cd "${WORKDIR}" &&
+		curl -skL "$URL" | tar xvz --strip-components=1 &&
+		refresh_autotools_config &&
+		if [ "$REPO" = "SDL-1.2" ]; then
+			patch_sdl12_x11
+			./autogen.sh
+			refresh_autotools_config
+		elif [ -x ./autogen.sh ]; then
+			# Satellite autogen often fails (missing AM_PATH_SDL); keep shipped configure.
+			./autogen.sh || true
+			refresh_autotools_config
+		fi &&
+		./configure --prefix=/usr/local --disable-shared --enable-static ${EXTRA_CONFIG} \
+			CFLAGS="-Os -g0" CXXFLAGS="-Os -g0" &&
+		make --jobs="${NPROC}" && make --jobs="${NPROC}" install &&
+		rm -rf "${WORKDIR}"
+}
+
+install_sdl1_dependencies() {
+	apt update && apt install -y --no-install-recommends \
+		libx11-dev libxext-dev libxxf86vm-dev libxrandr-dev libxrender-dev \
+		libxi-dev libxss-dev libasound2-dev \
+		libfreetype6-dev libpng-dev libjpeg-dev zlib1g-dev \
+		libogg-dev libvorbis-dev libflac-dev libmikmod-dev
+	install_freetype_config_shim
+}
+
 install_sdl1() {
-	apt install -y --no-install-recommends \
-		libsdl1.2-dev libsdl-ttf2.0-dev libsdl-image1.2-dev \
-		libsdl-mixer1.2-dev libsdl-net1.2-dev
+	install_sdl1_dependencies
+	export PATH="/usr/local/bin:${PATH}"
+	export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:${PKG_CONFIG_PATH:-}"
+	install_sdl1_source SDL-1.2 "${SDL_VERSION}"
+	# SDL_ttf for SDL1 is the historic 2.0.x line.
+	install_sdl1_source SDL_ttf "${SDL_TTF_VERSION}"
+	install_sdl1_source SDL_image "${SDL_IMAGE_VERSION}" "--enable-png --enable-jpg --disable-tif"
+	install_sdl1_source SDL_mixer "${SDL_MIXER_VERSION}"
+	install_sdl1_source SDL_net "${SDL_NET_VERSION}"
 }
 
 install_sdl2() {
@@ -74,7 +160,7 @@ install_sdl3_dependencies() {
 install_build_dependencies() {
 	apt update && apt install -y --no-install-recommends \
 		g++ make cmake file git curl ca-certificates \
-		pkg-config autoconf automake libtool \
+		pkg-config autoconf automake libtool autotools-dev \
 		libwebp-dev libfreetype6-dev libharfbuzz-dev \
 		libpng-dev libjpeg-dev libogg-dev libvorbis-dev libflac-dev libmpg123-dev \
 		libopus-dev && \
@@ -93,8 +179,10 @@ install_runtime_dependencies() {
 		case "$SDL_VERSION" in \
 			1.*) \
 				apt install -y --no-install-recommends \
-					libsdl1.2-dev libsdl-ttf2.0-dev libsdl-image1.2-dev \
-					libsdl-mixer1.2-dev libsdl-net1.2-dev ;; \
+					libx11-dev libxext-dev libxxf86vm-dev libxrandr-dev libxrender-dev \
+					libxi-dev libxss-dev libasound2-dev \
+					libfreetype6-dev libpng-dev libjpeg-dev \
+					libogg-dev libvorbis-dev libflac-dev libmikmod-dev ;; \
 			2.*) \
 				apt install -y --no-install-recommends \
 					libfreetype6-dev libharfbuzz-dev libpng-dev libjpeg-dev libwebp-dev \
