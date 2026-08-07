@@ -1,6 +1,7 @@
 [![ci](https://github.com/humbertodias/docker-sdl-compiler/actions/workflows/ci.yml/badge.svg)](https://github.com/humbertodias/docker-sdl-compiler/actions/workflows/ci.yml)
 [![Deploy](https://github.com/humbertodias/docker-sdl-compiler/actions/workflows/deploy.yml/badge.svg)](https://github.com/humbertodias/docker-sdl-compiler/actions/workflows/deploy.yml)
-[![Docker Pulls](https://img.shields.io/docker/pulls/hldtux/sdl-compiler-native.svg)](https://hub.docker.com/r/hldtux/sdl-compiler-native)
+[![Docker native Pulls](https://img.shields.io/docker/pulls/hldtux/sdl-compiler-native.svg?logo=docker)](https://hub.docker.com/r/hldtux/sdl-compiler-native)
+[![Docker wasm Pulls](https://img.shields.io/docker/pulls/hldtux/sdl-compiler-wasm.svg?logo=docker)](https://hub.docker.com/r/hldtux/sdl-compiler-wasm)
 
 
 # SDL Compiler Docker Image
