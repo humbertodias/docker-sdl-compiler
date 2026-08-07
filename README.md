@@ -11,7 +11,7 @@ Docker images for **cross-compiling SDL applications**, split by target:
 | Image | Purpose | Tags |
 |---|---|---|
 | [`hldtux/sdl-compiler-native`](https://hub.docker.com/r/hldtux/sdl-compiler-native) | Native Linux + MinGW (static SDL) | SDL version (`1.2`, `2.32.10`, `3.4.14`) |
-| [`hldtux/sdl-compiler-wasm`](https://hub.docker.com/r/hldtux/sdl-compiler-wasm) | WebAssembly via Emscripten | emsdk version (`6.0.5`) |
+| [`hldtux/sdl-compiler-wasm`](https://hub.docker.com/r/hldtux/sdl-compiler-wasm) | WebAssembly via Emscripten | emsdk version (`6.0.6`) |
 
 ## Included Components
 
@@ -65,7 +65,7 @@ docker run --rm -ti \
 One image covers all SDL versions via `-s USE_SDL=`.
 
 ```bash
-EMSDK_VERSION=6.0.5
+EMSDK_VERSION=6.0.6
 SDL_PROJECT=./samples/emsdk
 
 docker run --rm -ti \
