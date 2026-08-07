@@ -5,8 +5,11 @@ SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 int quit = 0;
 
-// Main loop called by Emscripten
 void main_loop(void) {
+    if (!renderer) {
+        return;
+    }
+
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_EVENT_QUIT) {
@@ -34,6 +37,11 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    // Register the loop before CreateRenderer so eglSwapInterval can set
+    // timing (emscripten #7100). Use simulateInfiniteLoop=0 so main can
+    // continue and create the window/renderer afterward.
+    emscripten_set_main_loop(main_loop, 0, 0);
+
     window = SDL_CreateWindow("Hello SDL3", 640, 480, SDL_WINDOW_RESIZABLE);
     if (!window) {
         SDL_Log("SDL_CreateWindow Error: %s", SDL_GetError());
@@ -49,8 +57,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    SDL_Log("Initialization complete, starting main loop.");
-    emscripten_set_main_loop(main_loop, 0, 1);
-
+    SDL_SetRenderVSync(renderer, 1);
+    emscripten_set_main_loop_timing(EM_TIMING_RAF, 0);
     return 0;
 }

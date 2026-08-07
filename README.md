@@ -100,7 +100,7 @@ python -m http.server -d $SDL_PROJECT
 #### SDL 3.x (Web)
 
 ```bash
-SDL_VERSION=3.4.12
+SDL_VERSION=3.4.14
 SDL_PROJECT=./samples/emsdk
 
 docker run --rm -ti \
