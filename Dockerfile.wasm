@@ -1,0 +1,17 @@
+ARG EMSDK_VERSION=6.0.5
+
+FROM emscripten/emsdk:${EMSDK_VERSION}
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    TZ=America/Sao_Paulo \
+    EMSDK_QUIET=1
+
+SHELL ["/bin/bash", "-c"]
+
+ARG EMSDK_VERSION
+
+ADD fn-wasm.sh /fn.sh
+
+RUN source /fn.sh && setup_emsdk && cleanup_image
+
+EXPOSE 8080

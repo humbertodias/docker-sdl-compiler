@@ -1,24 +1,27 @@
-## 🚀 Building and Pushing Containers
+## Building and Pushing Containers
 
-Use the following `make` commands to build and push containers for different SDL versions.
+Images are split into **native** (Linux/MinGW) and **wasm** (Emscripten) variants.
 
-### SDL 1.x
+### Native (SDL + MinGW)
 
 ```sh
-make VERSION=sdl1
-make push
+make TARGET=native VERSION=sdl1
+make TARGET=native VERSION=sdl2
+make TARGET=native VERSION=sdl3
+make TARGET=native VERSION=sdl2 push
 ```
 
-### SDL 2.x
+### WebAssembly (Emscripten)
 
 ```sh
-make VERSION=sdl2
-make push
+make TARGET=wasm VERSION=sdl1
+make TARGET=wasm VERSION=sdl2
+make TARGET=wasm VERSION=sdl3
+make TARGET=wasm VERSION=sdl2 push
 ```
 
-### SDL 3.x
+### Build all variants
 
 ```sh
-make VERSION=sdl3
-make push
+make build-all
 ```
