@@ -1,6 +1,6 @@
 #include <SDL3/SDL.h>
 #include <emscripten.h>
-#include "hello_common.h"
+#include "../hello_common.h"
 
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
