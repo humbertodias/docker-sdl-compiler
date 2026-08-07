@@ -58,27 +58,27 @@ jobs:
         run: |
           case "${{ matrix.version }}" in
             sdl1)
-              SAMPLE_DIR=samples/sdl1
-              BUILD_CMD='g++ main.cpp -o main -g `sdl-config --cflags --static-libs`'
+              BUILD_CMD='g++ -I. sdl1/main.cpp -o sdl1/main -g `sdl-config --cflags --static-libs`'
+              OUT=samples/sdl1/main
               ;;
             sdl2)
-              SAMPLE_DIR=samples/sdl2
-              BUILD_CMD='g++ main.cpp -o main -g `sdl2-config --cflags --static-libs`'
+              BUILD_CMD='g++ -I. sdl2/main.cpp -o sdl2/main -g `sdl2-config --cflags --static-libs`'
+              OUT=samples/sdl2/main
               ;;
             sdl3)
-              SAMPLE_DIR=samples/sdl3
-              BUILD_CMD='g++ main.cpp -o main -g `pkg-config sdl3 --cflags --libs`'
+              BUILD_CMD='g++ -I. sdl3/main.cpp -o sdl3/main -g `pkg-config sdl3 --cflags --libs`'
+              OUT=samples/sdl3/main
               ;;
           esac
 
           docker run --rm \
-            -v "$PWD/$SAMPLE_DIR:/workdir" \
+            -v "$PWD/samples:/workdir" \
             -w /workdir \
             "${{ env.TAG_NAME }}" \
             bash -ic "$BUILD_CMD"
 
-          test -x "$SAMPLE_DIR/main"
-          file "$SAMPLE_DIR/main"
+          test -x "$OUT"
+          file "$OUT"
 
   wasm:
     runs-on: ubuntu-latest
@@ -116,13 +116,13 @@ jobs:
       - name: Compile WebAssembly samples
         run: |
           docker run --rm \
-            -v "$PWD/samples/emsdk:/workdir" \
+            -v "$PWD/samples:/workdir" \
             -w /workdir \
             "${{ env.TAG_NAME }}" \
             bash -ic '
-              emcc main-sdl1.cpp -o sdl1.html -s USE_SDL=1 -s WASM=1 &&
-              emcc main-sdl2.cpp -o sdl2.html -s USE_SDL=2 -s WASM=1 &&
-              emcc main-sdl3.cpp -o sdl3.html -s USE_SDL=3 -s WASM=1
+              emcc -I. emsdk/main-sdl1.cpp -o emsdk/sdl1.html -s USE_SDL=1 -s WASM=1 &&
+              emcc -I. emsdk/main-sdl2.cpp -o emsdk/sdl2.html -s USE_SDL=2 -s WASM=1 &&
+              emcc -I. emsdk/main-sdl3.cpp -o emsdk/sdl3.html -s USE_SDL=3 -s WASM=1
             '
 
           test -f samples/emsdk/sdl1.html

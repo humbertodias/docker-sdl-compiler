@@ -24,19 +24,18 @@ native:
 	fi
 
 sdl1:
-	g++ sdl1/main.cpp -o sdl1/$(MAIN) -g `sdl-config --cflags --static-libs`
+	g++ -I. sdl1/main.cpp -o sdl1/$(MAIN) -g `sdl-config --cflags --static-libs`
 
 sdl2:
-	g++ sdl2/main.cpp -o sdl2/$(MAIN) -g `sdl2-config --cflags --static-libs`
+	g++ -I. sdl2/main.cpp -o sdl2/$(MAIN) -g `sdl2-config --cflags --static-libs`
 
 sdl3:
-	g++ sdl3/main.cpp -o sdl3/$(MAIN) -g `pkg-config sdl3 --cflags --libs`
+	g++ -I. sdl3/main.cpp -o sdl3/$(MAIN) -g `pkg-config sdl3 --cflags --libs`
 
 wasm:
-	cd emsdk && \
-	emcc main-sdl1.cpp -o sdl1.html -s USE_SDL=1 -s WASM=1 && \
-	emcc main-sdl2.cpp -o sdl2.html -s USE_SDL=2 -s WASM=1 && \
-	emcc main-sdl3.cpp -o sdl3.html -s USE_SDL=3 -s WASM=1
+	emcc -I. emsdk/main-sdl1.cpp -o emsdk/sdl1.html -s USE_SDL=1 -s WASM=1 && \
+	emcc -I. emsdk/main-sdl2.cpp -o emsdk/sdl2.html -s USE_SDL=2 -s WASM=1 && \
+	emcc -I. emsdk/main-sdl3.cpp -o emsdk/sdl3.html -s USE_SDL=3 -s WASM=1
 
 build/native: native
 build/wasm: wasm

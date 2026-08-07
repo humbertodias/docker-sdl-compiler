@@ -1,7 +1,7 @@
 #include <SDL/SDL.h>
 #include <stdio.h>
 #include <emscripten.h>
-#include "../hello_common.h"
+#include "hello_common.h"
 
 SDL_Surface* screen = NULL;
 SDL_Surface* card = NULL;
