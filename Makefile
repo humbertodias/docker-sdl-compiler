@@ -51,8 +51,12 @@ shell: build
 	bash
 
 clean:
-	docker ps -f name=${TAG_NAME} -qa | xargs docker rm -f
-	docker image ls --filter 'reference=${TAG_NAME}' -qa | xargs docker rmi -f
+	@ids=$$(docker images --format '{{.ID}} {{.Repository}}' \
+		| awk '$$2 ~ /(^|\/)sdl-compiler-(native|wasm)$$/ { print $$1 }' \
+		| sort -u); \
+	if [ -n "$$ids" ]; then docker rmi -f $$ids; else echo 'No sdl-compiler images to remove'; fi
+
+clean-all: clean
 
 format:
 	shfmt -w fn-native.sh fn-wasm.sh

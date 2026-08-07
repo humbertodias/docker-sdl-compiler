@@ -25,3 +25,9 @@ make TARGET=wasm push
 ```sh
 make build-all
 ```
+
+### Clean local images
+
+```sh
+make clean       # removes all sdl-compiler-native and sdl-compiler-wasm images
+```
