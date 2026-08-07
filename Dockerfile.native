@@ -32,6 +32,7 @@ RUN source /fn.sh && \
             install_sdl3 SDL3_mixer ${SDL_MIXER_VERSION} && \
             install_sdl3 SDL3_net ${SDL_NET_VERSION} ;; \
     esac && \
+    slim_installed_sdl && \
     cleanup_image
 
 FROM debian:bookworm-slim
@@ -48,5 +49,7 @@ ADD fn-native.sh /fn.sh
 RUN source /fn.sh && install_runtime_dependencies && cleanup_image
 
 COPY --from=builder /usr/local /usr/local
+
+RUN source /fn.sh && slim_installed_sdl
 
 EXPOSE 8080

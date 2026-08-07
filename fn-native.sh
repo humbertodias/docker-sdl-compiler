@@ -15,9 +15,19 @@ install_sdl2() {
 	echo $URL
 	NPROC=$(nproc)
 	WORKDIR=$(mktemp -d --suffix=sdl)
+
+	EXTRA_CONFIG="--disable-shared --enable-static"
+	case "$NAME" in
+	SDL2_ttf)
+		# Avoid embedding FreeType/HarfBuzz into libSDL2_ttf.a (~100MB+).
+		EXTRA_CONFIG="$EXTRA_CONFIG --disable-freetype-builtin --disable-harfbuzz-builtin"
+		;;
+	esac
+
 	cd ${WORKDIR} &&
 		curl -skL $URL | tar xvz --strip-components=1 &&
-		./configure && make --jobs=${NPROC} && make --jobs=${NPROC} install &&
+		./configure ${EXTRA_CONFIG} CFLAGS="-Os -g0" CXXFLAGS="-Os -g0" &&
+		make --jobs=${NPROC} && make --jobs=${NPROC} install &&
 		rm -rf ${WORKDIR}
 }
 
@@ -30,11 +40,25 @@ install_sdl3() {
 	echo $URL
 	NPROC=$(nproc)
 	WORKDIR=$(mktemp -d --suffix=sdl)
+
+	EXTRA_CMAKE="-DSDL_SHARED=OFF -DSDL_STATIC=ON -DBUILD_SHARED_LIBS=OFF"
+	case "$NAME" in
+	SDL3_ttf)
+		EXTRA_CMAKE="$EXTRA_CMAKE -DSDLTTF_VENDORED=OFF -DSDLTTF_HARFBUZZ=ON -DSDLTTF_FREETYPE=ON"
+		;;
+	SDL3_image)
+		EXTRA_CMAKE="$EXTRA_CMAKE -DSDLIMAGE_VENDORED=OFF"
+		;;
+	SDL3_mixer)
+		EXTRA_CMAKE="$EXTRA_CMAKE -DSDLMIXER_VENDORED=OFF"
+		;;
+	esac
+
 	cd ${WORKDIR} &&
 		curl -skL $URL | tar xvz --strip-components=1 &&
-		cmake -DCMAKE_BUILD_TYPE=Release . &&
-		cmake --build . --config Release --parallel ${NPROC}
-	cmake --install . --config Release
+		cmake -DCMAKE_BUILD_TYPE=MinSizeRel ${EXTRA_CMAKE} . &&
+		cmake --build . --config MinSizeRel --parallel ${NPROC}
+	cmake --install . --config MinSizeRel
 	rm -rf ${WORKDIR}
 }
 
@@ -49,11 +73,11 @@ install_sdl3_dependencies() {
 
 install_build_dependencies() {
 	apt update && apt install -y --no-install-recommends \
-		build-essential cmake file gcc g++ make git zip curl ca-certificates \
-		python3 pkg-config autoconf automake libtool \
-		libgsl-dev libncurses5-dev libwebp-dev libfreetype6-dev libharfbuzz-dev \
+		g++ make cmake file git curl ca-certificates \
+		pkg-config autoconf automake libtool \
+		libwebp-dev libfreetype6-dev libharfbuzz-dev \
 		libpng-dev libjpeg-dev libogg-dev libvorbis-dev libflac-dev libmpg123-dev \
-		libopus-dev meson xutils-dev && \
+		libopus-dev && \
 		arch=$(dpkg --print-architecture) && \
 		if [ "$arch" = "amd64" ]; then \
 			apt install -y --no-install-recommends \
@@ -63,8 +87,9 @@ install_build_dependencies() {
 }
 
 install_runtime_dependencies() {
+	# Keep a minimal toolchain + libs required for static SDL linking.
 	apt update && apt install -y --no-install-recommends \
-		bash build-essential cmake pkg-config curl ca-certificates python3 file && \
+		bash g++ make pkg-config ca-certificates && \
 		case "$SDL_VERSION" in \
 			1.*) \
 				apt install -y --no-install-recommends \
@@ -73,13 +98,12 @@ install_runtime_dependencies() {
 			2.*) \
 				apt install -y --no-install-recommends \
 					libfreetype6-dev libharfbuzz-dev libpng-dev libjpeg-dev libwebp-dev \
-					libogg-dev libvorbis-dev libflac-dev libmpg123-dev libopus-dev \
-					libncurses5-dev libgsl-dev ;; \
+					libogg-dev libvorbis-dev libflac-dev libmpg123-dev libopus-dev ;; \
 			3.*) \
 				apt install -y --no-install-recommends \
 					libfreetype6-dev libharfbuzz-dev libpng-dev libjpeg-dev libwebp-dev \
 					libogg-dev libvorbis-dev libflac-dev libmpg123-dev libopus-dev \
-					libncurses5-dev libgsl-dev libasound2-dev libpulse-dev libaudio-dev \
+					libasound2-dev libpulse-dev libaudio-dev \
 					libfribidi-dev libjack-dev libsndio-dev libx11-dev libxext-dev \
 					libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev \
 					libxtst-dev libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev \
@@ -94,9 +118,16 @@ install_runtime_dependencies() {
 		fi
 }
 
+slim_installed_sdl() {
+	# Final image only needs static libs for --static-libs linking.
+	find /usr/local -type f \( -name '*.so' -o -name '*.so.*' -o -name '*.la' -o -name '*.dll' \) -delete
+	find /usr/local -type f -name '*.a' -exec strip --strip-debug {} + 2>/dev/null || true
+}
+
 cleanup_image() {
 	apt remove --purge -y manpages man-db 2>/dev/null || true
 	apt autoremove -y
 	apt clean
-	rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man /usr/share/locale /tmp/*
+	rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man /usr/share/locale \
+		/usr/share/info /var/cache/apt /tmp/* /root/.cache
 }
