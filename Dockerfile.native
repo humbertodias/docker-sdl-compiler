@@ -13,7 +13,9 @@ ARG SDL_NET_VERSION
 
 ADD fn-native.sh /fn.sh
 
-RUN source /fn.sh && \
+RUN printf 'APT::Install-Recommends "false";\nAPT::Install-Suggests "false";\n' \
+      >/etc/apt/apt.conf.d/docker-norecommends && \
+    source /fn.sh && \
     install_build_dependencies && \
     case "$SDL_VERSION" in \
         1.*) \
@@ -46,7 +48,9 @@ ARG SDL_VERSION
 
 ADD fn-native.sh /fn.sh
 
-RUN source /fn.sh && install_runtime_dependencies && cleanup_image
+RUN printf 'APT::Install-Recommends "false";\nAPT::Install-Suggests "false";\n' \
+      >/etc/apt/apt.conf.d/docker-norecommends && \
+    source /fn.sh && install_runtime_dependencies && cleanup_image
 
 COPY --from=builder /usr/local /usr/local
 

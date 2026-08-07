@@ -76,7 +76,7 @@ install_sdl1_dependencies() {
 		libx11-dev libxext-dev libxxf86vm-dev libxrandr-dev libxrender-dev \
 		libxi-dev libxss-dev libasound2-dev \
 		libfreetype6-dev libpng-dev libjpeg-dev zlib1g-dev \
-		libogg-dev libvorbis-dev libflac-dev libmikmod-dev
+		libogg-dev libvorbis-dev libflac-dev
 	install_freetype_config_shim
 }
 
@@ -88,7 +88,8 @@ install_sdl1() {
 	# SDL_ttf for SDL1 is the historic 2.0.x line.
 	install_sdl1_source SDL_ttf "${SDL_TTF_VERSION}"
 	install_sdl1_source SDL_image "${SDL_IMAGE_VERSION}" "--enable-png --enable-jpg --disable-tif"
-	install_sdl1_source SDL_mixer "${SDL_MIXER_VERSION}"
+	# Skip mikmod: Debian's libmikmod3 depends on libsdl2, which bloats the SDL1 image.
+	install_sdl1_source SDL_mixer "${SDL_MIXER_VERSION}" "--disable-music-mod --disable-music-mp3"
 	install_sdl1_source SDL_net "${SDL_NET_VERSION}"
 }
 
@@ -157,65 +158,98 @@ install_sdl3_dependencies() {
 		libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev libthai-dev
 }
 
+# Link-time deps for SDL_* satellites (ttf/image/mixer). Core SDL dlopens video/audio.
+install_satellite_link_deps() {
+	case "$SDL_VERSION" in
+	1.*)
+		apt install -y --no-install-recommends \
+			libfreetype6-dev libpng-dev libjpeg-dev zlib1g-dev \
+			libogg-dev libvorbis-dev libflac-dev
+		;;
+	2.* | 3.*)
+		apt install -y --no-install-recommends \
+			libfreetype6-dev libharfbuzz-dev libpng-dev libjpeg-dev libwebp-dev zlib1g-dev \
+			libogg-dev libvorbis-dev libflac-dev libmpg123-dev libopus-dev
+		;;
+	esac
+}
+
+install_mingw_toolchain() {
+	arch=$(dpkg --print-architecture)
+	if [ "$arch" = "amd64" ]; then
+		apt install -y --no-install-recommends \
+			gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 mingw-w64-tools
+	fi
+}
+
 install_build_dependencies() {
+	# Builder stage only: no MinGW (final stage owns the cross toolchain).
 	apt update && apt install -y --no-install-recommends \
-		g++ make cmake file git curl ca-certificates \
-		pkg-config autoconf automake libtool autotools-dev \
-		libwebp-dev libfreetype6-dev libharfbuzz-dev \
-		libpng-dev libjpeg-dev libogg-dev libvorbis-dev libflac-dev libmpg123-dev \
-		libopus-dev && \
-		arch=$(dpkg --print-architecture) && \
-		if [ "$arch" = "amd64" ]; then \
-			apt install -y --no-install-recommends \
-				gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 mingw-w64 mingw-w64-tools \
-				gcc-multilib g++-multilib; \
-		fi
+		g++ make curl ca-certificates \
+		pkg-config autoconf automake libtool autotools-dev
+	case "$SDL_VERSION" in
+	1.*)
+		# SDL1 deps installed in install_sdl1_dependencies.
+		;;
+	2.*)
+		apt install -y --no-install-recommends \
+			libwebp-dev libfreetype6-dev libharfbuzz-dev \
+			libpng-dev libjpeg-dev libogg-dev libvorbis-dev libflac-dev libmpg123-dev \
+			libopus-dev
+		;;
+	3.*)
+		apt install -y --no-install-recommends \
+			cmake ninja-build \
+			libwebp-dev libfreetype6-dev libharfbuzz-dev \
+			libpng-dev libjpeg-dev libogg-dev libvorbis-dev libflac-dev libmpg123-dev \
+			libopus-dev
+		;;
+	esac
 }
 
 install_runtime_dependencies() {
-	# Keep a minimal toolchain + libs required for static SDL linking.
+	# Compiler image: toolchain + satellite link libs. Skip Mesa/X11 -dev —
+	# static SDL only needs -lSDL* -lm -lpthread; video backends are dlopened.
 	apt update && apt install -y --no-install-recommends \
-		bash g++ make pkg-config ca-certificates && \
-		case "$SDL_VERSION" in \
-			1.*) \
-				apt install -y --no-install-recommends \
-					libx11-dev libxext-dev libxxf86vm-dev libxrandr-dev libxrender-dev \
-					libxi-dev libxss-dev libasound2-dev \
-					libfreetype6-dev libpng-dev libjpeg-dev \
-					libogg-dev libvorbis-dev libflac-dev libmikmod-dev ;; \
-			2.*) \
-				apt install -y --no-install-recommends \
-					libfreetype6-dev libharfbuzz-dev libpng-dev libjpeg-dev libwebp-dev \
-					libogg-dev libvorbis-dev libflac-dev libmpg123-dev libopus-dev ;; \
-			3.*) \
-				apt install -y --no-install-recommends \
-					libfreetype6-dev libharfbuzz-dev libpng-dev libjpeg-dev libwebp-dev \
-					libogg-dev libvorbis-dev libflac-dev libmpg123-dev libopus-dev \
-					libasound2-dev libpulse-dev libaudio-dev \
-					libfribidi-dev libjack-dev libsndio-dev libx11-dev libxext-dev \
-					libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev \
-					libxtst-dev libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev \
-					libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev \
-					libudev-dev libthai-dev ;; \
-		esac && \
-		arch=$(dpkg --print-architecture) && \
-		if [ "$arch" = "amd64" ]; then \
-			apt install -y --no-install-recommends \
-				gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 mingw-w64 mingw-w64-tools \
-				gcc-multilib g++-multilib; \
-		fi
+		bash g++ make pkg-config
+	install_satellite_link_deps
+	install_mingw_toolchain
 }
 
 slim_installed_sdl() {
 	# Final image only needs static libs for --static-libs linking.
 	find /usr/local -type f \( -name '*.so' -o -name '*.so.*' -o -name '*.la' -o -name '*.dll' \) -delete
+	find /usr/local -type f \( -name '*test*.a' -o -name 'libSDL*_test.a' \) -delete
 	find /usr/local -type f -name '*.a' -exec strip --strip-debug {} + 2>/dev/null || true
+	rm -rf /usr/local/share/man /usr/local/share/doc /usr/local/share/info \
+		/usr/local/cmake /usr/local/lib/cmake 2>/dev/null || true
+}
+
+slim_runtime_toolchain() {
+	# g++ Depends on sanitizer runtimes (~25MB). Delete the libs in-place —
+	# do not apt-purge them or apt will remove gcc/g++ as well.
+	rm -f /usr/lib/*/libasan.so* /usr/lib/*/libhwasan.so* \
+		/usr/lib/*/liblsan.so* /usr/lib/*/libtsan.so* /usr/lib/*/libubsan.so* \
+		/usr/lib/gcc/*/*/libasan.so* /usr/lib/gcc/*/*/libhwasan.so* \
+		/usr/lib/gcc/*/*/liblsan.so* /usr/lib/gcc/*/*/libtsan.so* \
+		/usr/lib/gcc/*/*/libubsan.so* /usr/lib/gcc/*/*/libasan.a \
+		/usr/lib/gcc/*/*/libhwasan.a /usr/lib/gcc/*/*/liblsan.a \
+		/usr/lib/gcc/*/*/libtsan.a /usr/lib/gcc/*/*/libubsan.a \
+		2>/dev/null || true
+	apt-get purge -y manpages manpages-dev man-db 2>/dev/null || true
+	# Drop unused gconv modules; keep a minimal set for C/POSIX locales.
+	for gconv_dir in /usr/lib/*/gconv; do
+		[ -d "$gconv_dir" ] || continue
+		find "$gconv_dir" -type f ! -name 'UTF*.so' ! -name 'UNICODE.so' ! -name 'gconv-modules*' -delete 2>/dev/null || true
+	done
 }
 
 cleanup_image() {
-	apt remove --purge -y manpages man-db 2>/dev/null || true
+	slim_runtime_toolchain
 	apt autoremove -y
 	apt clean
 	rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man /usr/share/locale \
-		/usr/share/info /var/cache/apt /tmp/* /root/.cache
+		/usr/share/info /usr/share/gcc /usr/share/lintian /usr/share/bug \
+		/var/cache/apt /tmp/* /root/.cache \
+		/usr/lib/systemd /usr/lib/udev/hwdb.bin 2>/dev/null || true
 }
