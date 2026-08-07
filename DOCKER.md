@@ -1,6 +1,6 @@
 ## Building and Pushing Containers
 
-Images are split into **native** (Linux/MinGW) and **wasm** (Emscripten) variants.
+Images are split into **native** (Linux/MinGW, per SDL version) and **wasm** (Emscripten, per emsdk version).
 
 ### Native (SDL + MinGW)
 
@@ -13,11 +13,11 @@ make TARGET=native VERSION=sdl2 push
 
 ### WebAssembly (Emscripten)
 
+One image for all SDL ports (`-s USE_SDL=1/2/3`), tagged by emsdk version:
+
 ```sh
-make TARGET=wasm VERSION=sdl1
-make TARGET=wasm VERSION=sdl2
-make TARGET=wasm VERSION=sdl3
-make TARGET=wasm VERSION=sdl2 push
+make TARGET=wasm
+make TARGET=wasm push
 ```
 
 ### Build all variants

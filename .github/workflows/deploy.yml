@@ -12,8 +12,8 @@ on:
           - native
           - wasm
       target_version:
-        description: 'SDL version target (sdl1, sdl2, sdl3)'
-        required: true
+        description: 'SDL version for native only (sdl1, sdl2, sdl3)'
+        required: false
         default: 'sdl2'
         type: choice
         options:
@@ -36,9 +36,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
-      - name: Load environment variables from selected file
+      - name: Load environment variables
         run: |
-          ENV_FILE=".github/env/${{ github.event.inputs.target }}/${{ github.event.inputs.target_version }}.env"
+          if [ "${{ github.event.inputs.target }}" = "wasm" ]; then
+            ENV_FILE=".github/env/wasm.env"
+          else
+            ENV_FILE=".github/env/native/${{ github.event.inputs.target_version }}.env"
+          fi
           if [ ! -f "$ENV_FILE" ]; then
             echo "Env file not found: $ENV_FILE"
             exit 1
@@ -46,14 +50,16 @@ jobs:
           set -a
           source "$ENV_FILE"
           set +a
-          echo "SDL_VERSION=$SDL_VERSION" >> $GITHUB_ENV
-          echo "SDL_TTF_VERSION=$SDL_TTF_VERSION" >> $GITHUB_ENV
-          echo "SDL_IMAGE_VERSION=$SDL_IMAGE_VERSION" >> $GITHUB_ENV
-          echo "SDL_MIXER_VERSION=$SDL_MIXER_VERSION" >> $GITHUB_ENV
-          echo "SDL_NET_VERSION=$SDL_NET_VERSION" >> $GITHUB_ENV
-          echo "EMSDK_VERSION=$EMSDK_VERSION" >> $GITHUB_ENV
-          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
-          echo "DOCKERHUB_REPONAME=$DOCKERHUB_REPONAME" >> $GITHUB_ENV
+          {
+            echo "SDL_VERSION=${SDL_VERSION:-}"
+            echo "SDL_TTF_VERSION=${SDL_TTF_VERSION:-}"
+            echo "SDL_IMAGE_VERSION=${SDL_IMAGE_VERSION:-}"
+            echo "SDL_MIXER_VERSION=${SDL_MIXER_VERSION:-}"
+            echo "SDL_NET_VERSION=${SDL_NET_VERSION:-}"
+            echo "EMSDK_VERSION=${EMSDK_VERSION:-}"
+            echo "TAG_NAME=$TAG_NAME"
+            echo "DOCKERHUB_REPONAME=$DOCKERHUB_REPONAME"
+          } >> "$GITHUB_ENV"
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
