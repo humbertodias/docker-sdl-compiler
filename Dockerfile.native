@@ -54,6 +54,7 @@ RUN printf 'APT::Install-Recommends "false";\nAPT::Install-Suggests "false";\n' 
 
 COPY --from=builder /usr/local /usr/local
 
-RUN source /fn.sh && slim_installed_sdl
+RUN source /fn.sh && slim_installed_sdl && configure_sdl_env
 
 EXPOSE 8080
+

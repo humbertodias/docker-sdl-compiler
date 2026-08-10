@@ -225,6 +225,21 @@ slim_installed_sdl() {
 		/usr/local/cmake /usr/local/lib/cmake 2>/dev/null || true
 }
 
+configure_sdl_env() {
+	local inc lib
+	case "$SDL_VERSION" in
+	1.*) inc=SDL; lib=SDL ;;
+	2.*) inc=SDL2; lib=SDL2 ;;
+	3.*) inc=SDL3; lib=SDL3 ;;
+	*)
+		echo "Unknown SDL_VERSION=$SDL_VERSION" >&2
+		return 1
+		;;
+	esac
+	echo "export SDL_CFLAGS=\"-I/usr/local/include/${inc} -D_REENTRANT\"" >>/etc/bash.bashrc
+	echo "export SDL_LIBS=\"-L/usr/local/lib /usr/local/lib/lib${lib}.a -lm -lpthread\"" >>/etc/bash.bashrc
+}
+
 slim_runtime_toolchain() {
 	# g++ Depends on sanitizer runtimes (~25MB). Delete the libs in-place —
 	# do not apt-purge them or apt will remove gcc/g++ as well.

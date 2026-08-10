@@ -19,6 +19,58 @@ Docker images for **cross-compiling SDL applications**, split by target:
 
 **Wasm:** Emscripten SDK (`emcc`), SDL ports via `-s USE_SDL=1/2/3`
 
+## Shell aliases
+
+Source once (or add to `~/.bashrc`):
+
+```bash
+sdl1c() {
+	docker run --rm -it \
+		-v "$PWD":/workdir \
+		-w /workdir \
+		hldtux/sdl-compiler-native:1.2.15 \
+		bash -ic "${*:-exec bash}"
+}
+
+sdl2c() {
+	docker run --rm -it \
+		-v "$PWD":/workdir \
+		-w /workdir \
+		hldtux/sdl-compiler-native:2.32.10 \
+		bash -ic "${*:-exec bash}"
+}
+
+sdl3c() {
+	docker run --rm -it \
+		-v "$PWD":/workdir \
+		-w /workdir \
+		hldtux/sdl-compiler-native:3.4.14 \
+		bash -ic "${*:-exec bash}"
+}
+
+wasmc() {
+	docker run --rm -it \
+		-v "$PWD":/workdir \
+		-w /workdir \
+		hldtux/sdl-compiler-wasm:6.0.6 \
+		bash -ic "${*:-exec bash}"
+}
+```
+
+Native images export `$SDL_CFLAGS` and `$SDL_LIBS` for the installed SDL version.
+
+```bash
+cd samples
+sdl1c 'g++ -I. sdl1/main.cpp -o sdl1/main -g $SDL_CFLAGS $SDL_LIBS'
+sdl2c 'g++ -I. sdl2/main.cpp -o sdl2/main -g $SDL_CFLAGS $SDL_LIBS'
+sdl3c 'g++ -I. sdl3/main.cpp -o sdl3/main -g $SDL_CFLAGS $SDL_LIBS'
+wasmc 'emcc -I. emsdk/main-sdl1.cpp -o emsdk/sdl1.html -s USE_SDL=1 -s WASM=1'
+wasmc 'emcc -I. emsdk/main-sdl2.cpp -o emsdk/sdl2.html -s USE_SDL=2 -s WASM=1'
+wasmc 'emcc -I. emsdk/main-sdl3.cpp -o emsdk/sdl3.html -s USE_SDL=3 -s WASM=1'
+
+sdl2c   # interactive shell in the container
+```
+
 ## Native Compilation (Linux)
 
 Mount `samples/` so shared `hello_common.h` is visible (`-I.`).
