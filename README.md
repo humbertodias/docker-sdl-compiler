@@ -11,7 +11,7 @@ Docker images for **cross-compiling SDL applications**, split by target:
 | Image | Purpose | Tags |
 |---|---|---|
 | [`hldtux/sdl-compiler-native`](https://hub.docker.com/r/hldtux/sdl-compiler-native) | Native Linux + MinGW (static SDL) | SDL version (`1.2.15`, `2.32.10`, `3.4.16`) |
-| [`hldtux/sdl-compiler-wasm`](https://hub.docker.com/r/hldtux/sdl-compiler-wasm) | WebAssembly via Emscripten | emsdk version (`6.0.6`) |
+| [`hldtux/sdl-compiler-wasm`](https://hub.docker.com/r/hldtux/sdl-compiler-wasm) | WebAssembly via Emscripten | emsdk version (`6.0.9`) |
 
 ## Included Components
 
@@ -52,7 +52,7 @@ wasmc() {
 	docker run --rm -it \
 		-v "$PWD":/workdir \
 		-w /workdir \
-		hldtux/sdl-compiler-wasm:6.0.6 \
+		hldtux/sdl-compiler-wasm:6.0.9 \
 		bash -ic "${*:-exec bash}"
 }
 ```
