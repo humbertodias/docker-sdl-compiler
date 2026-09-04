@@ -25,13 +25,13 @@ native:
 	fi
 
 sdl1:
-	$(CC) -DSDL1 -I. sdl1/main.cpp -o sdl1/$(MAIN) -g `pkg-config --static --cflags --libs sdl`
+	$(CC) -I. sdl1/main.cpp -o sdl1/$(MAIN) -g `pkg-config --static --cflags --libs sdl`
 
 sdl2:
-	$(CC) -DSDL2 -I. sdl2/main.cpp -o sdl2/$(MAIN) -g `pkg-config --static --cflags --libs sdl2`
+	$(CC) -I. sdl2/main.cpp -o sdl2/$(MAIN) -g `pkg-config --static --cflags --libs sdl2`
 
 sdl3:
-	$(CC) -DSDL3 -I. sdl3/main.cpp -o sdl3/$(MAIN) -g `pkg-config --static --cflags --libs sdl3`
+	$(CC) -I. sdl3/main.cpp -o sdl3/$(MAIN) -g `pkg-config --static --cflags --libs sdl3`
 
 wasm:
 	emcc -I. emsdk/main-sdl1.cpp -o emsdk/sdl1.html -s USE_SDL=1 -s WASM=1 && \

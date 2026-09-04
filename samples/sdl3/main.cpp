@@ -1,4 +1,4 @@
-#include "sdl.h"
+#include <SDL3/SDL.h>
 #include "hello_common.h"
 
 static void fill_surface(void* ctx, int x, int y, int w, int h, unsigned color) {

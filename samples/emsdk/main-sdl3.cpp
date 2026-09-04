@@ -1,4 +1,4 @@
-#include "sdl.h"
+#include <SDL3/SDL.h>
 #include <emscripten.h>
 #include "hello_common.h"
 

@@ -58,15 +58,15 @@ jobs:
         run: |
           case "${{ matrix.version }}" in
             sdl1)
-              BUILD_CMD='g++ -DSDL1 -I. sdl1/main.cpp -o sdl1/main -g `pkg-config --static --cflags --libs sdl`'
+              BUILD_CMD='g++ -I. sdl1/main.cpp -o sdl1/main -g `pkg-config --static --cflags --libs sdl`'
               OUT=samples/sdl1/main
               ;;
             sdl2)
-              BUILD_CMD='g++ -DSDL2 -I. sdl2/main.cpp -o sdl2/main -g `pkg-config --static --cflags --libs sdl2`'
+              BUILD_CMD='g++ -I. sdl2/main.cpp -o sdl2/main -g `pkg-config --static --cflags --libs sdl2`'
               OUT=samples/sdl2/main
               ;;
             sdl3)
-              BUILD_CMD='g++ -DSDL3 -I. sdl3/main.cpp -o sdl3/main -g `pkg-config --static --cflags --libs sdl3`'
+              BUILD_CMD='g++ -I. sdl3/main.cpp -o sdl3/main -g `pkg-config --static --cflags --libs sdl3`'
               OUT=samples/sdl3/main
               ;;
           esac
