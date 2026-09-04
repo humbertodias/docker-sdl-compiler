@@ -1,4 +1,5 @@
 MAIN := main
+CC := g++
 
 .PHONY: all native wasm clean sdl1 sdl2 sdl3 build/native build/wasm
 
@@ -19,18 +20,18 @@ native:
 	fi; \
 	if [ "$$built" -eq 0 ]; then \
 		echo "No SDL toolkit found in this image." >&2; \
-		echo "Use hldtux/sdl-compiler-native:1.2.15|2.32.10|3.4.14 matching the sample." >&2; \
+		echo "Use hldtux/sdl-compiler-native:1.2.15|2.32.10|3.4.16 matching the sample." >&2; \
 		exit 1; \
 	fi
 
 sdl1:
-	g++ -I. sdl1/main.cpp -o sdl1/$(MAIN) -g `sdl-config --cflags --static-libs`
+	$(CC) -DSDL1 -I. sdl1/main.cpp -o sdl1/$(MAIN) -g `pkg-config --static --cflags --libs sdl`
 
 sdl2:
-	g++ -I. sdl2/main.cpp -o sdl2/$(MAIN) -g `sdl2-config --cflags --static-libs`
+	$(CC) -DSDL2 -I. sdl2/main.cpp -o sdl2/$(MAIN) -g `pkg-config --static --cflags --libs sdl2`
 
 sdl3:
-	g++ -I. sdl3/main.cpp -o sdl3/$(MAIN) -g `pkg-config sdl3 --cflags --libs`
+	$(CC) -DSDL3 -I. sdl3/main.cpp -o sdl3/$(MAIN) -g `pkg-config --static --cflags --libs sdl3`
 
 wasm:
 	emcc -I. emsdk/main-sdl1.cpp -o emsdk/sdl1.html -s USE_SDL=1 -s WASM=1 && \

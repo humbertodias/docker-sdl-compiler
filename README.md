@@ -10,7 +10,7 @@ Docker images for **cross-compiling SDL applications**, split by target:
 
 | Image | Purpose | Tags |
 |---|---|---|
-| [`hldtux/sdl-compiler-native`](https://hub.docker.com/r/hldtux/sdl-compiler-native) | Native Linux + MinGW (static SDL) | SDL version (`1.2.15`, `2.32.10`, `3.4.14`) |
+| [`hldtux/sdl-compiler-native`](https://hub.docker.com/r/hldtux/sdl-compiler-native) | Native Linux + MinGW (static SDL) | SDL version (`1.2.15`, `2.32.10`, `3.4.16`) |
 | [`hldtux/sdl-compiler-wasm`](https://hub.docker.com/r/hldtux/sdl-compiler-wasm) | WebAssembly via Emscripten | emsdk version (`6.0.6`) |
 
 ## Included Components
@@ -44,7 +44,7 @@ sdl3c() {
 	docker run --rm -it \
 		-v "$PWD":/workdir \
 		-w /workdir \
-		hldtux/sdl-compiler-native:3.4.14 \
+		hldtux/sdl-compiler-native:3.4.16 \
 		bash -ic "${*:-exec bash}"
 }
 
@@ -102,7 +102,7 @@ docker run --rm -ti \
 #### SDL 3.x
 
 ```bash
-SDL_VERSION=3.4.14
+SDL_VERSION=3.4.16
 
 docker run --rm -ti \
   -v "$PWD/samples:/workdir" \
