@@ -116,7 +116,7 @@ docker run --rm -ti \
 One image covers all SDL versions via `-s USE_SDL=`.
 
 ```bash
-EMSDK_VERSION=6.0.6
+EMSDK_VERSION=6.0.9
 
 docker run --rm -ti \
   -v "$PWD/samples:/workdir" \
