@@ -61,9 +61,9 @@ Native images export `$SDL_CFLAGS` and `$SDL_LIBS` for the installed SDL version
 
 ```bash
 cd samples
-sdl1c 'g++ -I. sdl1/main.cpp -o sdl1/main -g $SDL_CFLAGS $SDL_LIBS'
-sdl2c 'g++ -I. sdl2/main.cpp -o sdl2/main -g $SDL_CFLAGS $SDL_LIBS'
-sdl3c 'g++ -I. sdl3/main.cpp -o sdl3/main -g $SDL_CFLAGS $SDL_LIBS'
+sdl1c 'g++ -I. sdl1/main.cpp -o sdl1/main -g `pkg-config --static --cflags --libs sdl`'
+sdl2c 'g++ -I. sdl2/main.cpp -o sdl2/main -g `pkg-config --static --cflags --libs sdl2`'
+sdl3c 'g++ -I. sdl3/main.cpp -o sdl3/main -g `pkg-config --static --cflags --libs sdl3`'
 wasmc 'emcc -I. emsdk/main-sdl1.cpp -o emsdk/sdl1.html -s USE_SDL=1 -s WASM=1'
 wasmc 'emcc -I. emsdk/main-sdl2.cpp -o emsdk/sdl2.html -s USE_SDL=2 -s WASM=1'
 wasmc 'emcc -I. emsdk/main-sdl3.cpp -o emsdk/sdl3.html -s USE_SDL=3 -s WASM=1'
