@@ -6,8 +6,15 @@
 #define HELLO_SCREEN_W 640
 #define HELLO_SCREEN_H 480
 #define HELLO_CARD_W 360
-#define HELLO_CARD_H 140
 #define HELLO_SCALE 3
+#define HELLO_VER_SCALE 2
+
+typedef struct HelloLibVersion {
+    const char* name;
+    int major;
+    int minor;
+    int patch;
+} HelloLibVersion;
 
 typedef void (*HelloFillFn)(void* ctx, int x, int y, int w, int h, unsigned color);
 
@@ -102,30 +109,49 @@ static int hello_text_height(int scale) {
     return 7 * scale;
 }
 
-/* Draws white card with "HELLO WORLD" and "SDL <major.minor.patch>" centered. */
-static void hello_paint_card(HelloFillFn fill, void* ctx, unsigned bg, unsigned border, unsigned text,
-                             int major, int minor, int patch) {
-    char line2[32];
-    snprintf(line2, sizeof(line2), "SDL %d.%d.%d", major, minor, patch);
+static int hello_card_height(int nlibs) {
+    const int pad = 14;
+    const int title_h = hello_text_height(HELLO_SCALE);
+    const int ver_h = hello_text_height(HELLO_VER_SCALE);
+    const int title_gap = 8;
+    const int ver_gap = 3;
+    int h = pad * 2 + title_h + title_gap;
+    if (nlibs > 0) {
+        h += nlibs * ver_h + (nlibs - 1) * ver_gap;
+    }
+    return h;
+}
 
-    fill(ctx, 0, 0, HELLO_CARD_W, HELLO_CARD_H, border);
-    fill(ctx, 4, 4, HELLO_CARD_W - 8, HELLO_CARD_H - 8, bg);
+/* Draws white card with "HELLO WORLD" and one "NAME x.y.z" line per library. */
+static void hello_paint_card(HelloFillFn fill, void* ctx, unsigned bg, unsigned border, unsigned text,
+                             const HelloLibVersion* libs, int nlibs) {
+    const int card_h = hello_card_height(nlibs);
+    const int pad = 14;
+    const int title_h = hello_text_height(HELLO_SCALE);
+    const int ver_h = hello_text_height(HELLO_VER_SCALE);
+    const int title_gap = 8;
+    const int ver_gap = 3;
+
+    fill(ctx, 0, 0, HELLO_CARD_W, card_h, border);
+    fill(ctx, 4, 4, HELLO_CARD_W - 8, card_h - 8, bg);
 
     const char* line1 = "HELLO WORLD";
-    int scale = HELLO_SCALE;
-    int line_h = hello_text_height(scale);
-    int gap = scale * 2;
-    int block_h = line_h * 2 + gap;
-    int y0 = (HELLO_CARD_H - block_h) / 2;
-
+    int y = pad;
     hello_draw_text(
         fill, ctx, line1,
-        (HELLO_CARD_W - hello_text_width(line1, scale)) / 2,
-        y0, scale, text
+        (HELLO_CARD_W - hello_text_width(line1, HELLO_SCALE)) / 2,
+        y, HELLO_SCALE, text
     );
-    hello_draw_text(
-        fill, ctx, line2,
-        (HELLO_CARD_W - hello_text_width(line2, scale)) / 2,
-        y0 + line_h + gap, scale, text
-    );
+    y += title_h + title_gap;
+
+    for (int i = 0; i < nlibs; ++i) {
+        char line[40];
+        snprintf(line, sizeof(line), "%s %d.%d.%d", libs[i].name, libs[i].major, libs[i].minor, libs[i].patch);
+        hello_draw_text(
+            fill, ctx, line,
+            (HELLO_CARD_W - hello_text_width(line, HELLO_VER_SCALE)) / 2,
+            y, HELLO_VER_SCALE, text
+        );
+        y += ver_h + ver_gap;
+    }
 }

@@ -1,4 +1,9 @@
 #include <SDL3/SDL.h>
+#include <SDL3_ttf/SDL_ttf.h>
+#include <SDL3_image/SDL_image.h>
+#include <SDL3_mixer/SDL_mixer.h>
+#include <SDL3_net/SDL_net.h>
+#include <SDL3_gfx/SDL3_gfxPrimitives.h>
 #include "hello_common.h"
 
 static void fill_surface(void* ctx, int x, int y, int w, int h, unsigned color) {
@@ -8,7 +13,19 @@ static void fill_surface(void* ctx, int x, int y, int w, int h, unsigned color) 
 }
 
 static SDL_Texture* create_hello_card(SDL_Renderer* r) {
-    SDL_Surface* surface = SDL_CreateSurface(HELLO_CARD_W, HELLO_CARD_H, SDL_PIXELFORMAT_RGBA32);
+    int ver = SDL_GetVersion();
+    HelloLibVersion libs[] = {
+        {"SDL", SDL_VERSIONNUM_MAJOR(ver), SDL_VERSIONNUM_MINOR(ver), SDL_VERSIONNUM_MICRO(ver)},
+        {"TTF", SDL_TTF_MAJOR_VERSION, SDL_TTF_MINOR_VERSION, SDL_TTF_MICRO_VERSION},
+        {"IMAGE", SDL_IMAGE_MAJOR_VERSION, SDL_IMAGE_MINOR_VERSION, SDL_IMAGE_MICRO_VERSION},
+        {"MIXER", SDL_MIXER_MAJOR_VERSION, SDL_MIXER_MINOR_VERSION, SDL_MIXER_MICRO_VERSION},
+        {"NET", SDL_NET_MAJOR_VERSION, SDL_NET_MINOR_VERSION, SDL_NET_MICRO_VERSION},
+        {"GFX", SDL3_GFXPRIMITIVES_MAJOR, SDL3_GFXPRIMITIVES_MINOR, SDL3_GFXPRIMITIVES_MICRO},
+    };
+    const int nlibs = (int)(sizeof(libs) / sizeof(libs[0]));
+    const int card_h = hello_card_height(nlibs);
+
+    SDL_Surface* surface = SDL_CreateSurface(HELLO_CARD_W, card_h, SDL_PIXELFORMAT_RGBA32);
     if (!surface) {
         return NULL;
     }
@@ -17,13 +34,7 @@ static SDL_Texture* create_hello_card(SDL_Renderer* r) {
     unsigned bg = SDL_MapRGBA(fmt, NULL, 255, 255, 255, 255);
     unsigned border = SDL_MapRGBA(fmt, NULL, 30, 30, 30, 255);
     unsigned text = SDL_MapRGBA(fmt, NULL, 20, 20, 20, 255);
-    int ver = SDL_GetVersion();
-    hello_paint_card(
-        fill_surface, surface, bg, border, text,
-        SDL_VERSIONNUM_MAJOR(ver),
-        SDL_VERSIONNUM_MINOR(ver),
-        SDL_VERSIONNUM_MICRO(ver)
-    );
+    hello_paint_card(fill_surface, surface, bg, border, text, libs, nlibs);
 
     SDL_Texture* texture = SDL_CreateTextureFromSurface(r, surface);
     SDL_DestroySurface(surface);
@@ -34,11 +45,14 @@ static void present(SDL_Renderer* renderer, SDL_Texture* card) {
     SDL_SetRenderDrawColor(renderer, 0, 128, 255, 255);
     SDL_RenderClear(renderer);
 
+    float card_w = 0.0f;
+    float card_h = 0.0f;
+    SDL_GetTextureSize(card, &card_w, &card_h);
     SDL_FRect dst = {
-        (float)(HELLO_SCREEN_W - HELLO_CARD_W) / 2.0f,
-        (float)(HELLO_SCREEN_H - HELLO_CARD_H) / 2.0f,
-        (float)HELLO_CARD_W,
-        (float)HELLO_CARD_H
+        (HELLO_SCREEN_W - card_w) / 2.0f,
+        (HELLO_SCREEN_H - card_h) / 2.0f,
+        card_w,
+        card_h
     };
     SDL_RenderTexture(renderer, card, NULL, &dst);
     SDL_RenderPresent(renderer);

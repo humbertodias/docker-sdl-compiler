@@ -5,8 +5,8 @@
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 SDL_Texture* card = NULL;
-int card_w = HELLO_CARD_W;
-int card_h = HELLO_CARD_H;
+int card_w = 0;
+int card_h = 0;
 int quit = 0;
 
 static void fill_surface(void* ctx, int x, int y, int w, int h, unsigned color) {
@@ -16,7 +16,14 @@ static void fill_surface(void* ctx, int x, int y, int w, int h, unsigned color) 
 }
 
 static SDL_Texture* create_hello_card(SDL_Renderer* r) {
-    SDL_Surface* surface = SDL_CreateSurface(HELLO_CARD_W, HELLO_CARD_H, SDL_PIXELFORMAT_RGBA32);
+    int ver = SDL_GetVersion();
+    HelloLibVersion libs[] = {
+        {"SDL", SDL_VERSIONNUM_MAJOR(ver), SDL_VERSIONNUM_MINOR(ver), SDL_VERSIONNUM_MICRO(ver)},
+    };
+    const int nlibs = (int)(sizeof(libs) / sizeof(libs[0]));
+    const int card_h = hello_card_height(nlibs);
+
+    SDL_Surface* surface = SDL_CreateSurface(HELLO_CARD_W, card_h, SDL_PIXELFORMAT_RGBA32);
     if (!surface) {
         return NULL;
     }
@@ -25,13 +32,7 @@ static SDL_Texture* create_hello_card(SDL_Renderer* r) {
     unsigned bg = SDL_MapRGBA(fmt, NULL, 255, 255, 255, 255);
     unsigned border = SDL_MapRGBA(fmt, NULL, 30, 30, 30, 255);
     unsigned text = SDL_MapRGBA(fmt, NULL, 20, 20, 20, 255);
-    int ver = SDL_GetVersion();
-    hello_paint_card(
-        fill_surface, surface, bg, border, text,
-        SDL_VERSIONNUM_MAJOR(ver),
-        SDL_VERSIONNUM_MINOR(ver),
-        SDL_VERSIONNUM_MICRO(ver)
-    );
+    hello_paint_card(fill_surface, surface, bg, border, text, libs, nlibs);
 
     SDL_Texture* texture = SDL_CreateTextureFromSurface(r, surface);
     SDL_DestroySurface(surface);
@@ -101,6 +102,12 @@ int main(int argc, char* argv[]) {
         SDL_Log("Failed to create hello card");
         return 1;
     }
+
+    float tw = 0.0f;
+    float th = 0.0f;
+    SDL_GetTextureSize(card, &tw, &th);
+    card_w = (int)tw;
+    card_h = (int)th;
 
     SDL_SetRenderVSync(renderer, 1);
     emscripten_set_main_loop_timing(EM_TIMING_RAF, 0);

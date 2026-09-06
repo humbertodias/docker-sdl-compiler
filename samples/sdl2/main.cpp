@@ -1,4 +1,9 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_net.h>
+#include <SDL2/SDL2_gfxPrimitives.h>
 #include <stdio.h>
 #include "hello_common.h"
 
@@ -9,7 +14,20 @@ static void fill_surface(void* ctx, int x, int y, int w, int h, unsigned color) 
 }
 
 static SDL_Texture* create_hello_card(SDL_Renderer* r) {
-    SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(0, HELLO_CARD_W, HELLO_CARD_H, 32, SDL_PIXELFORMAT_RGBA32);
+    SDL_version ver;
+    SDL_GetVersion(&ver);
+    HelloLibVersion libs[] = {
+        {"SDL", ver.major, ver.minor, ver.patch},
+        {"TTF", SDL_TTF_MAJOR_VERSION, SDL_TTF_MINOR_VERSION, SDL_TTF_PATCHLEVEL},
+        {"IMAGE", SDL_IMAGE_MAJOR_VERSION, SDL_IMAGE_MINOR_VERSION, SDL_IMAGE_PATCHLEVEL},
+        {"MIXER", SDL_MIXER_MAJOR_VERSION, SDL_MIXER_MINOR_VERSION, SDL_MIXER_PATCHLEVEL},
+        {"NET", SDL_NET_MAJOR_VERSION, SDL_NET_MINOR_VERSION, SDL_NET_PATCHLEVEL},
+        {"GFX", SDL2_GFXPRIMITIVES_MAJOR, SDL2_GFXPRIMITIVES_MINOR, SDL2_GFXPRIMITIVES_MICRO},
+    };
+    const int nlibs = (int)(sizeof(libs) / sizeof(libs[0]));
+    const int card_h = hello_card_height(nlibs);
+
+    SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(0, HELLO_CARD_W, card_h, 32, SDL_PIXELFORMAT_RGBA32);
     if (!surface) {
         return NULL;
     }
@@ -17,9 +35,7 @@ static SDL_Texture* create_hello_card(SDL_Renderer* r) {
     unsigned bg = SDL_MapRGBA(surface->format, 255, 255, 255, 255);
     unsigned border = SDL_MapRGBA(surface->format, 30, 30, 30, 255);
     unsigned text = SDL_MapRGBA(surface->format, 20, 20, 20, 255);
-    SDL_version ver;
-    SDL_GetVersion(&ver);
-    hello_paint_card(fill_surface, surface, bg, border, text, ver.major, ver.minor, ver.patch);
+    hello_paint_card(fill_surface, surface, bg, border, text, libs, nlibs);
 
     SDL_Texture* texture = SDL_CreateTextureFromSurface(r, surface);
     SDL_FreeSurface(surface);
@@ -30,11 +46,14 @@ static void present(SDL_Renderer* renderer, SDL_Texture* card) {
     SDL_SetRenderDrawColor(renderer, 0, 128, 255, 255);
     SDL_RenderClear(renderer);
 
+    int card_w = 0;
+    int card_h = 0;
+    SDL_QueryTexture(card, NULL, NULL, &card_w, &card_h);
     SDL_Rect dst = {
-        (HELLO_SCREEN_W - HELLO_CARD_W) / 2,
-        (HELLO_SCREEN_H - HELLO_CARD_H) / 2,
-        HELLO_CARD_W,
-        HELLO_CARD_H
+        (HELLO_SCREEN_W - card_w) / 2,
+        (HELLO_SCREEN_H - card_h) / 2,
+        card_w,
+        card_h
     };
     SDL_RenderCopy(renderer, card, NULL, &dst);
     SDL_RenderPresent(renderer);

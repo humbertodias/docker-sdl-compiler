@@ -1,4 +1,9 @@
 #include <SDL/SDL.h>
+#include <SDL/SDL_ttf.h>
+#include <SDL/SDL_image.h>
+#include <SDL/SDL_mixer.h>
+#include <SDL/SDL_net.h>
+#include <SDL/SDL_gfxPrimitives.h>
 #include <stdio.h>
 #include "hello_common.h"
 
@@ -13,8 +18,20 @@ static void fill_surface(void* ctx, int x, int y, int w, int h, unsigned color) 
 }
 
 static SDL_Surface* create_hello_card(SDL_Surface* screen_fmt) {
+    const SDL_version* ver = SDL_Linked_Version();
+    HelloLibVersion libs[] = {
+        {"SDL", ver->major, ver->minor, ver->patch},
+        {"TTF", SDL_TTF_MAJOR_VERSION, SDL_TTF_MINOR_VERSION, SDL_TTF_PATCHLEVEL},
+        {"IMAGE", SDL_IMAGE_MAJOR_VERSION, SDL_IMAGE_MINOR_VERSION, SDL_IMAGE_PATCHLEVEL},
+        {"MIXER", SDL_MIXER_MAJOR_VERSION, SDL_MIXER_MINOR_VERSION, SDL_MIXER_PATCHLEVEL},
+        {"NET", SDL_NET_MAJOR_VERSION, SDL_NET_MINOR_VERSION, SDL_NET_PATCHLEVEL},
+        {"GFX", SDL_GFXPRIMITIVES_MAJOR, SDL_GFXPRIMITIVES_MINOR, SDL_GFXPRIMITIVES_MICRO},
+    };
+    const int nlibs = (int)(sizeof(libs) / sizeof(libs[0]));
+    const int card_h = hello_card_height(nlibs);
+
     SDL_Surface* surface = SDL_CreateRGBSurface(
-        SDL_SWSURFACE, HELLO_CARD_W, HELLO_CARD_H,
+        SDL_SWSURFACE, HELLO_CARD_W, card_h,
         screen_fmt->format->BitsPerPixel,
         screen_fmt->format->Rmask,
         screen_fmt->format->Gmask,
@@ -28,8 +45,7 @@ static SDL_Surface* create_hello_card(SDL_Surface* screen_fmt) {
     unsigned bg = SDL_MapRGB(surface->format, 255, 255, 255);
     unsigned border = SDL_MapRGB(surface->format, 30, 30, 30);
     unsigned text = SDL_MapRGB(surface->format, 20, 20, 20);
-    const SDL_version* ver = SDL_Linked_Version();
-    hello_paint_card(fill_surface, surface, bg, border, text, ver->major, ver->minor, ver->patch);
+    hello_paint_card(fill_surface, surface, bg, border, text, libs, nlibs);
     return surface;
 }
 
