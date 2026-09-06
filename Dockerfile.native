@@ -10,6 +10,8 @@ ARG SDL_TTF_VERSION
 ARG SDL_IMAGE_VERSION
 ARG SDL_MIXER_VERSION
 ARG SDL_NET_VERSION
+ARG SDL_GFX_VERSION
+ARG SDL_GFX_URL
 
 ADD fn-native.sh /fn.sh
 
@@ -19,20 +21,23 @@ RUN printf 'APT::Install-Recommends "false";\nAPT::Install-Suggests "false";\n' 
     install_build_dependencies && \
     case "$SDL_VERSION" in \
         1.*) \
-            install_sdl1 ;; \
+            install_sdl1 && \
+            install_sdl_gfx_autotools "${SDL_GFX_URL}" ;; \
         2.*) \
             install_sdl2 SDL2 ${SDL_VERSION} && \
             install_sdl2 SDL2_ttf ${SDL_TTF_VERSION} && \
             install_sdl2 SDL2_image ${SDL_IMAGE_VERSION} && \
             install_sdl2 SDL2_mixer ${SDL_MIXER_VERSION} && \
-            install_sdl2 SDL2_net ${SDL_NET_VERSION} ;; \
+            install_sdl2 SDL2_net ${SDL_NET_VERSION} && \
+            install_sdl_gfx_autotools "${SDL_GFX_URL}" ;; \
         3.*) \
             install_sdl3_dependencies && \
             install_sdl3 SDL3 ${SDL_VERSION} && \
             install_sdl3 SDL3_ttf ${SDL_TTF_VERSION} && \
             install_sdl3 SDL3_image ${SDL_IMAGE_VERSION} && \
             install_sdl3 SDL3_mixer ${SDL_MIXER_VERSION} && \
-            install_sdl3 SDL3_net ${SDL_NET_VERSION} ;; \
+            install_sdl3 SDL3_net ${SDL_NET_VERSION} && \
+            install_sdl3_gfx "${SDL_GFX_URL}" "${SDL_GFX_VERSION}" ;; \
     esac && \
     slim_installed_sdl && \
     cleanup_image

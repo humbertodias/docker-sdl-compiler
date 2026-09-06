@@ -149,6 +149,75 @@ install_sdl3() {
 	rm -rf ${WORKDIR}
 }
 
+install_sdl_gfx_autotools() {
+	URL=$1
+	echo "$URL"
+	NPROC=$(nproc)
+	WORKDIR=$(mktemp -d --suffix=sdl-gfx)
+	export PATH="/usr/local/bin:${PATH}"
+	export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:${PKG_CONFIG_PATH:-}"
+
+	cd "${WORKDIR}" &&
+		curl -skL "$URL" | tar xvz --strip-components=1 &&
+		refresh_autotools_config &&
+		if [ -x ./autogen.sh ]; then
+			./autogen.sh || true
+			refresh_autotools_config
+		fi &&
+		./configure --prefix=/usr/local --disable-shared --enable-static --disable-mmx \
+			CFLAGS="-Os -g0" CXXFLAGS="-Os -g0" &&
+		make --jobs="${NPROC}" && make --jobs="${NPROC}" install &&
+		rm -rf "${WORKDIR}"
+}
+
+install_sdl3_gfx() {
+	URL=$1
+	VERSION=$2
+	echo "$URL"
+	NPROC=$(nproc)
+	WORKDIR=$(mktemp -d --suffix=sdl-gfx)
+	export PATH="/usr/local/bin:${PATH}"
+	export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:${PKG_CONFIG_PATH:-}"
+
+	cd "${WORKDIR}" &&
+		curl -skL "$URL" | tar xvz --strip-components=1 &&
+		# v1.0.1 CMakeLists hardcodes ../SDL/include, builds a shared lib, and
+		# omits ARCHIVE DESTINATION so the static .a would not be installed.
+		sed -i 's|${CMAKE_CURRENT_SOURCE_DIR}/../SDL/include|/usr/local/include|g' CMakeLists.txt &&
+		sed -i 's/if(NOT (CMAKE_SYSTEM_NAME STREQUAL "Emscripten"))/if(FALSE)/g' CMakeLists.txt &&
+		sed -i 's/if(NOT(CMAKE_SYSTEM_NAME STREQUAL "Emscripten"))/if(FALSE)/g' CMakeLists.txt &&
+		sed -i '/PUBLIC_HEADER DESTINATION include\/SDL3_gfx/i\
+  ARCHIVE DESTINATION lib' CMakeLists.txt &&
+		cmake -DCMAKE_BUILD_TYPE=MinSizeRel \
+			-DCMAKE_INSTALL_PREFIX=/usr/local \
+			-DCMAKE_PREFIX_PATH=/usr/local \
+			-DCMAKE_LIBRARY_PATH=/usr/local/lib \
+			-DBUILD_TESTS=OFF \
+			-DCMAKE_C_FLAGS="-Os -g0 -I/usr/local/include" \
+			. &&
+		cmake --build . --config MinSizeRel --parallel "${NPROC}" &&
+		cmake --install . --config MinSizeRel
+
+	if [ ! -f /usr/local/lib/pkgconfig/sdl3-gfx.pc ] && [ ! -f /usr/local/lib/pkgconfig/SDL3_gfx.pc ]; then
+		mkdir -p /usr/local/lib/pkgconfig
+		cat >/usr/local/lib/pkgconfig/SDL3_gfx.pc <<EOF
+prefix=/usr/local
+exec_prefix=\${prefix}
+libdir=\${prefix}/lib
+includedir=\${prefix}/include
+
+Name: SDL3_gfx
+Description: Graphics drawing primitives for SDL3
+Version: ${VERSION}
+Requires: sdl3
+Libs: -L\${libdir} -lSDL3_gfx
+Cflags: -I\${includedir} -I\${includedir}/SDL3_gfx
+EOF
+	fi
+
+	rm -rf "${WORKDIR}"
+}
+
 install_sdl3_dependencies() {
 	apt -y update && apt -y install --no-install-recommends \
 		pkg-config cmake ninja-build libasound2-dev libpulse-dev \

@@ -15,7 +15,7 @@ Docker images for **cross-compiling SDL applications**, split by target:
 
 ## Included Components
 
-**Native:** SDL 1.2 / 2.x / 3.x (static), MinGW-w64, gcc/g++/make
+**Native:** SDL 1.2 / 2.x / 3.x (static) plus ttf/image/mixer/net/gfx, MinGW-w64, gcc/g++/make
 
 **Wasm:** Emscripten SDK (`emcc`), SDL ports via `-s USE_SDL=1/2/3`
 

@@ -31,6 +31,8 @@ jobs:
             echo "SDL_IMAGE_VERSION=${SDL_IMAGE_VERSION:-}"
             echo "SDL_MIXER_VERSION=${SDL_MIXER_VERSION:-}"
             echo "SDL_NET_VERSION=${SDL_NET_VERSION:-}"
+            echo "SDL_GFX_VERSION=${SDL_GFX_VERSION:-}"
+            echo "SDL_GFX_URL=${SDL_GFX_URL:-}"
             echo "TAG_NAME=$TAG_NAME"
           } >> "$GITHUB_ENV"
 
@@ -53,6 +55,8 @@ jobs:
             SDL_IMAGE_VERSION=${{ env.SDL_IMAGE_VERSION }}
             SDL_MIXER_VERSION=${{ env.SDL_MIXER_VERSION }}
             SDL_NET_VERSION=${{ env.SDL_NET_VERSION }}
+            SDL_GFX_VERSION=${{ env.SDL_GFX_VERSION }}
+            SDL_GFX_URL=${{ env.SDL_GFX_URL }}
 
       - name: Compile native sample
         run: |
