@@ -34,9 +34,12 @@ sdl3:
 	$(CC) -I. sdl3/main.cpp -o sdl3/$(MAIN) -g `pkg-config --static --cflags --libs sdl3`
 
 wasm:
-	emcc -I. emsdk/main-sdl1.cpp -o emsdk/sdl1.html -s USE_SDL=1 -s WASM=1 && \
-	emcc -I. emsdk/main-sdl2.cpp -o emsdk/sdl2.html -s USE_SDL=2 -s WASM=1 && \
-	emcc -I. emsdk/main-sdl3.cpp -o emsdk/sdl3.html -s USE_SDL=3 -s WASM=1
+	emcc -I. emsdk/main-sdl1.cpp -o emsdk/sdl1.html -s WASM=1 \
+	    -s USE_SDL=1 && \
+	emcc -I. emsdk/main-sdl2.cpp -o emsdk/sdl2.html -s WASM=1 \
+		-s USE_SDL=2 -s USE_SDL_TTF=2 -s USE_SDL_IMAGE=2 -s USE_SDL_MIXER=2 -s USE_SDL_NET=2 && \
+	emcc -I. emsdk/main-sdl3.cpp -o emsdk/sdl3.html -s WASM=1 \
+		-s USE_SDL=3 -s USE_SDL_TTF=3
 
 build/native: native
 build/wasm: wasm

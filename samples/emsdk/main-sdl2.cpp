@@ -1,4 +1,8 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_net.h>
 #include <stdio.h>
 #include <emscripten.h>
 #include "hello_common.h"
@@ -20,6 +24,10 @@ static SDL_Texture* create_hello_card(SDL_Renderer* r) {
     SDL_GetVersion(&ver);
     HelloLibVersion libs[] = {
         {"SDL", ver.major, ver.minor, ver.patch},
+        {"TTF", SDL_TTF_MAJOR_VERSION, SDL_TTF_MINOR_VERSION, SDL_TTF_PATCHLEVEL},
+        {"IMAGE", SDL_IMAGE_MAJOR_VERSION, SDL_IMAGE_MINOR_VERSION, SDL_IMAGE_PATCHLEVEL},
+        {"MIXER", SDL_MIXER_MAJOR_VERSION, SDL_MIXER_MINOR_VERSION, SDL_MIXER_PATCHLEVEL},
+        {"NET", SDL_NET_MAJOR_VERSION, SDL_NET_MINOR_VERSION, SDL_NET_PATCHLEVEL},
     };
     const int nlibs = (int)(sizeof(libs) / sizeof(libs[0]));
     const int card_h = hello_card_height(nlibs);

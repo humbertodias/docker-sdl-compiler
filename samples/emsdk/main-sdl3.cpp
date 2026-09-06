@@ -1,4 +1,5 @@
 #include <SDL3/SDL.h>
+#include <SDL3_ttf/SDL_ttf.h>
 #include <emscripten.h>
 #include "hello_common.h"
 
@@ -19,6 +20,7 @@ static SDL_Texture* create_hello_card(SDL_Renderer* r) {
     int ver = SDL_GetVersion();
     HelloLibVersion libs[] = {
         {"SDL", SDL_VERSIONNUM_MAJOR(ver), SDL_VERSIONNUM_MINOR(ver), SDL_VERSIONNUM_MICRO(ver)},
+        {"TTF", SDL_TTF_MAJOR_VERSION, SDL_TTF_MINOR_VERSION, SDL_TTF_MICRO_VERSION},
     };
     const int nlibs = (int)(sizeof(libs) / sizeof(libs[0]));
     const int card_h = hello_card_height(nlibs);

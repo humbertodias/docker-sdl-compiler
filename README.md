@@ -17,7 +17,7 @@ Docker images for **cross-compiling SDL applications**, split by target:
 
 **Native:** SDL 1.2 / 2.x / 3.x (static) plus ttf/image/mixer/net/gfx, MinGW-w64, gcc/g++/make
 
-**Wasm:** Emscripten SDK (`emcc`), SDL ports via `-s USE_SDL=1/2/3`
+**Wasm:** Emscripten SDK (`emcc`), SDL ports via `-s USE_SDL=1/2/3` (SDL2 also ttf/image/mixer/net; SDL3 also ttf)
 
 ## Shell aliases
 
@@ -65,8 +65,8 @@ sdl1c 'g++ -I. sdl1/main.cpp -o sdl1/main -g `pkg-config --static --cflags --lib
 sdl2c 'g++ -I. sdl2/main.cpp -o sdl2/main -g `pkg-config --static --cflags --libs sdl2`'
 sdl3c 'g++ -I. sdl3/main.cpp -o sdl3/main -g `pkg-config --static --cflags --libs sdl3`'
 wasmc 'emcc -I. emsdk/main-sdl1.cpp -o emsdk/sdl1.html -s USE_SDL=1 -s WASM=1'
-wasmc 'emcc -I. emsdk/main-sdl2.cpp -o emsdk/sdl2.html -s USE_SDL=2 -s WASM=1'
-wasmc 'emcc -I. emsdk/main-sdl3.cpp -o emsdk/sdl3.html -s USE_SDL=3 -s WASM=1'
+wasmc 'emcc -I. emsdk/main-sdl2.cpp -o emsdk/sdl2.html -s WASM=1 -s USE_SDL=2 -s USE_SDL_TTF=2 -s USE_SDL_IMAGE=2 -s USE_SDL_MIXER=2 -s USE_SDL_NET=2'
+wasmc 'emcc -I. emsdk/main-sdl3.cpp -o emsdk/sdl3.html -s WASM=1 -s USE_SDL=3 -s USE_SDL_TTF=3'
 
 sdl2c   # interactive shell in the container
 ```
@@ -113,7 +113,7 @@ docker run --rm -ti \
 
 ## WebAssembly (Emscripten)
 
-One image covers all SDL versions via `-s USE_SDL=`.
+One image covers all SDL versions. SDL2 also pulls ttf/image/mixer/net ports; SDL3 pulls ttf. There is no SDL1 satellite port in this emsdk.
 
 ```bash
 EMSDK_VERSION=6.0.9
